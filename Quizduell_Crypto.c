@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <bsd/string.h>
 #include <math.h> // for abs(x) prepare_key
 #include <gcrypt.h>
 #include "base64.h"
@@ -124,7 +125,7 @@ void create_password_hash(char **hash, const char *password)
   size_t hash_len = gcry_md_get_algo_dlen(MESSAGE_DIGEST_ALGO);
   char *hash_buffer = malloc(hash_len);
   *hash = malloc(hash_len);
-  (*hash)[0] = '\0'; // using it with strcat later, so this needs to be terminated before
+  (*hash)[0] = '\0'; // using it with strlcat later, so this needs to be terminated before
   char *buffer = NULL;
   size_t input_len = 0;
   
@@ -132,11 +133,10 @@ void create_password_hash(char **hash, const char *password)
 
   /* Create a hash device and check the HASH */
   gcry_md_hash_buffer(MESSAGE_DIGEST_ALGO, (void *)(hash_buffer), (const void*)buffer, input_len);
-
-    for (int i = 0; i < hash_len; i++) {
-        char s_val[3];
-        snprintf(s_val, sizeof(s_val), "%02x", (int)(0xff & hash_buffer[i]));
-        strcat(*hash, s_val);
-    }
+  for (int i = 0; i < hash_len; i++) {
+      char s_val[3];
+      snprintf(s_val, sizeof(s_val), "%02x", (int)(0xff & hash_buffer[i]));
+      strlcat(*hash, s_val, hash_len);
+  }
   #undef MESSAGE_DIGEST_ALGO
 }
