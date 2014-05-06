@@ -5,344 +5,127 @@
 #include <Evas.h>
 #include <Elementary.h>
 
+#include "view/Quizduell_View_Private.h"
 
-typedef struct
+static char *user_name = "nobody";
+
+char *qd_ctrl_user_name_get(void)
 {
-    Evas_Object *win;
-    Evas_Object *layout;
-    struct {
-        Evas_Object *layout;
-        Evas_Object *en_user;
-        Evas_Object *en_pw;
-        Evas_Object *ok_btn;
-    } login;
-    struct {
-        Evas_Object *layout;
-        Evas_Object *icon;
-        Evas_Object *name;
-    } user_ind;
-    struct {
-        Evas_Object *layout;
-    } toolbar;
-    struct {
-        Evas_Object *layout;
-    } new_game;
-    struct {
-        Evas_Object *layout;
-    } preferences;
-    struct {
-        Evas_Object *layout;
-    } game;
-    struct {
-        Evas_Object *layout;
-    } question;
-    struct {
-        Evas_Object *layout;
-    } category;
-    struct {
-        Evas_Object *pref_btn;
-        Evas_Object *reload_btn;
-        Evas_Object *new_btn;
-        Evas_Object *layout;
-        Evas_Object *active_list;
-        Evas_Object *inactive_list;
-        Evas_Object *done_list;
-    } games_list;
-} Qd_UI;
-
-static Qd_UI view;
-
-static void qd_view_user_data_get(char **un, char **pw)
-{
-    const char *_un, *_pw;
-    size_t len;
-
-    _un = elm_entry_entry_get(view.login.en_user);
-    len = strlen(_un);
-    *un = malloc(len + 1);
-    snprintf(*un, len + 1, "%s", _un); 
-
-    _pw = elm_entry_entry_get(view.login.en_pw);
-    len = strlen(_pw);
-    *pw = malloc(len + 1);
-    snprintf(*pw, len + 1, "%s", _pw); 
+    return user_name;
 }
 
-static void qd_view_games_list_page_show(void);
-
-static void qd_view_login_page_clicked_ok_cb(void *data, Evas_Object *btn, void *event_info)
+void qd_view_user_name_set(char *name)
 {
-    char *un, *pw;
-    qd_view_user_data_get(&un, &pw);
-    printf("u: %s, pw: %s\n", un, pw);
-    elm_object_part_text_set(view.user_ind.name, "default", un);
-    qd_view_games_list_page_show();
+    ecore_event_add(QD_EVENT_USER_NAME_CHANGED, name, NULL, NULL);
+}
+
+void qd_ctrl_user_login_set(char *name, char* pw)
+{
+    user_name = name;
+    printf("logging nu: %s, pw: %s\n", name, pw);
+    // on login set new name
+    qd_view_user_name_set(name);
+
 }
 
 
 
-int qd_view_login_page_add(void)
+Eina_Bool qd_view_set_user_name_ev_hd_cb(void *data, int type, void *ev)
 {
-    Evas_Object *frame;
-    // box as layout
-    view.login.layout = elm_box_add(view.win);
-    //elm_win_resize_object_add(view.win, view.login.layout);
-    evas_object_size_hint_weight_set(view.login.layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_size_hint_align_set(view.login.layout, EVAS_HINT_FILL, 0.0);
+    Evas_Object *tp = (Evas_Object *) data;
+    char *text = (char *) ev;
+    printf("setting new names\n");
 
-    // User name entry
-    frame = elm_frame_add(view.login.layout);
-    view.login.en_user = elm_entry_add(view.login.layout);
-    elm_entry_single_line_set(view.login.en_user, EINA_TRUE);
-    evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
-    evas_object_size_hint_align_set(frame, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_show(view.login.en_user);
-    elm_object_part_content_set(frame, "default", view.login.en_user);
-    elm_object_part_text_set(frame, "default", "User name");
-    evas_object_show(frame);
-    elm_box_pack_end(view.login.layout, frame);
+    elm_object_part_text_set(tp, "default", text);
+    return ECORE_CALLBACK_PASS_ON;
+}
 
-    // pw entry
-    frame = elm_frame_add(view.login.layout);
-    view.login.en_pw = elm_entry_add(view.login.layout);
-    elm_entry_single_line_set(view.login.en_pw, EINA_TRUE);
-    elm_entry_password_set(view.login.en_pw, EINA_TRUE);
-    evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
-    evas_object_size_hint_align_set(frame, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_show(view.login.en_pw);
-    elm_object_part_content_set(frame, "default", view.login.en_pw);
-    elm_object_part_text_set(frame, "default", "Password");
-    evas_object_show(frame);
-    elm_box_pack_end(view.login.layout, frame);
-
-    // OK button
-    view.login.ok_btn = elm_button_add(view.login.layout);
-    elm_object_part_text_set(view.login.ok_btn, "default", "login");
-    evas_object_size_hint_weight_set(view.login.ok_btn, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_size_hint_align_set(view.login.ok_btn, EVAS_HINT_FILL, 0.0);
-    elm_box_pack_end(view.login.layout, view.login.ok_btn);
-    evas_object_show(view.login.ok_btn);
-    evas_object_smart_callback_add(view.login.ok_btn, "clicked", qd_view_login_page_clicked_ok_cb, NULL);
-
-
-    return 0;
+void qd_view_set_user_ev_handler_del_cb(void *data, Evas *e, Evas_Object *obj, void *ev)
+{
+    Ecore_Event_Handler *eh = (Ecore_Event_Handler *) data;
+    ecore_event_handler_del(eh);
 }
 
 
-
-
-int qd_view_user_indicator_add(void)
+Evas_Object *qd_view_user_indicator_add(Evas_Object *parent)
 {
-    Evas_Object *box;
+    Evas_Object *box, *layout, *name_obj;
+    char *name;
+    Ecore_Event_Handler *hd;
 
     // use a fram as main layout obj
-    view.user_ind.layout = elm_frame_add(view.win);
-    elm_object_part_text_set(view.user_ind.layout, "default", "logged in as");
+    layout = elm_frame_add(parent);
+    elm_object_part_text_set(layout, "default", "logged in as");
 
     // put box into frame
-    box = elm_box_add(view.user_ind.layout);
+    box = elm_box_add(layout);
     elm_box_horizontal_set(box, EINA_TRUE);
     evas_object_show(box);
 
     // Label for user name
-    view.user_ind.name = elm_label_add(view.user_ind.layout);
-    elm_object_part_text_set(view.user_ind.name, "default", "nobody");
-    evas_object_size_hint_align_set(view.user_ind.name, 0.0, 0.0);
-    evas_object_size_hint_weight_set(view.user_ind.name, EVAS_HINT_EXPAND, 0.0); 
-    evas_object_show(view.user_ind.name);
-    elm_box_pack_end(box, view.user_ind.name);
+    name_obj = elm_label_add(layout);
+    name = qd_ctrl_user_name_get();
+    elm_object_part_text_set(name_obj, "default", name);
+    evas_object_size_hint_align_set(name_obj, 0.0, 0.0);
+    evas_object_size_hint_weight_set(name_obj, EVAS_HINT_EXPAND, 0.0); 
+    evas_object_show(name_obj);
+    elm_box_pack_end(box, name_obj);
 
-    elm_object_part_content_set(view.user_ind.layout, "default", box);
-    evas_object_size_hint_align_set(view.user_ind.layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_size_hint_weight_set(view.user_ind.layout, EVAS_HINT_EXPAND, 0.0);
+    elm_object_part_content_set(layout, "default", box);
+    evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, 0.0);
 
+    hd = ecore_event_handler_add(QD_EVENT_USER_NAME_CHANGED, qd_view_set_user_name_ev_hd_cb, name_obj);
+    evas_object_event_callback_add(name_obj, EVAS_CALLBACK_DEL, qd_view_set_user_ev_handler_del_cb, hd);
+
+    return layout;
 }
 
-
-int qd_view_user_data_set(char *name, Evas_Object *icon)
-{
-
-    elm_object_part_text_set(view.user_ind.name, "default", name);
-    //view.user_ic = icon;
-}
-
-static void _hide_cb(void *data, Evas *e, Evas_Object *obj, void *ev)
-{
-    evas_object_hide((Evas_Object *) data);
-}
-
-static void _show_cb(void *data, Evas *e, Evas_Object *obj, void *ev)
-{
-    evas_object_show((Evas_Object *) data);
-}
-
-static void qd_view_obj_show_hide_with(Evas_Object *parent, Evas_Object *child)
-{
-    evas_object_event_callback_add(parent, EVAS_CALLBACK_SHOW, _hide_cb, child);
-    evas_object_event_callback_add(parent, EVAS_CALLBACK_HIDE, _show_cb, child);
-}
-
-void qd_view_preferences_page_show(void);
-static void qd_view_games_list_pref_clicked_cb(void *data, Evas_Object *obj, void *ev)
-{
-    qd_view_preferences_page_show();
-}
-
-int qd_view_games_list_page_add(void)
-{
-    Evas_Object *frame, *scroller, *box;
-
-    view.games_list.layout = elm_box_add(view.win);
-    evas_object_size_hint_align_set(view.games_list.layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_size_hint_weight_set(view.games_list.layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_show(view.games_list.layout);
-
-    // 1.layout element: user indicator
-    elm_box_pack_end(view.games_list.layout, view.user_ind.layout);
-    qd_view_obj_show_hide_with(view.games_list.layout, view.user_ind.layout);
-    //evas_object_show(view.user_ind.layout);
-
-    // box inside scroller
-    // box for different list
-    box = elm_box_add(view.games_list.layout);
-    evas_object_show(box);
-    evas_object_size_hint_align_set(box, EVAS_HINT_FILL, 0.0);
-    evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, 0.0);
-
-    // add start new game button
-    view.games_list.new_btn = elm_button_add(view.games_list.layout);
-    elm_object_part_text_set(view.games_list.new_btn, "default", "Start a new game");
-    evas_object_size_hint_weight_set(view.games_list.new_btn, EVAS_HINT_EXPAND, 0.0);
-    evas_object_size_hint_align_set(view.games_list.new_btn, EVAS_HINT_FILL, 0.0);
-    elm_box_pack_end(box, view.games_list.new_btn);
-    evas_object_show(view.games_list.new_btn);
-
-    // add preferences button
-    view.games_list.pref_btn = elm_button_add(view.games_list.layout);
-    elm_object_part_text_set(view.games_list.pref_btn, "default", "Pref.");
-    evas_object_size_hint_weight_set(view.games_list.pref_btn, EVAS_HINT_EXPAND, 0.0);
-    evas_object_size_hint_align_set(view.games_list.pref_btn, EVAS_HINT_FILL, 0.0);
-    evas_object_smart_callback_add(view.games_list.pref_btn, "clicked", qd_view_games_list_pref_clicked_cb, NULL);
-
-
-    // add a scroller for all the things (2. layout element)
-    scroller = elm_scroller_add(view.win);
-    elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_ON);
-    evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_show(scroller);
-    elm_box_pack_end(view.games_list.layout, scroller);
-    elm_object_part_content_set(scroller, "default", box);
-
-    
-#define GAMES_LIST_ADD(_list_var, _label_text) \
-    frame = elm_frame_add(view.games_list.layout); \
-    evas_object_size_hint_align_set(frame, EVAS_HINT_FILL, EVAS_HINT_FILL); \
-    evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0); \
-    elm_box_pack_end(box, frame); \
-    evas_object_show(frame); \
-    _list_var = elm_list_add(view.games_list.layout); \
-    elm_list_mode_set(_list_var, ELM_LIST_EXPAND); \
-    elm_object_part_text_set(frame, "default", _label_text); \
-    elm_object_part_content_set(frame, "default", _list_var); \
-    elm_list_go(_list_var)
-
-    GAMES_LIST_ADD(view.games_list.active_list, "Your turn");
-    GAMES_LIST_ADD(view.games_list.inactive_list, "Waiting for opponent");
-    elm_list_select_mode_set(view.games_list.inactive_list, ELM_OBJECT_SELECT_MODE_NONE);
-    GAMES_LIST_ADD(view.games_list.done_list, "Finished games");
-    elm_list_select_mode_set(view.games_list.done_list, ELM_OBJECT_SELECT_MODE_NONE);
-
-    //evas_object_show(view.toolbar.layout);
-    evas_object_show(view.user_ind.layout);
-    return 0;
-}
-
-void qd_view_games_list_active_item_add(char *user_name, void *data)
-{
-    elm_list_item_append(view.games_list.active_list, user_name, NULL, NULL, NULL, data);
-}
-
-void qd_view_games_list_inactive_item_add(char *user_name, void *data)
-{
-    elm_list_item_append(view.games_list.inactive_list, user_name, NULL, NULL, NULL, data);
-}
-
-void qd_view_games_list_done_item_add(char *user_name, void *data)
-{
-    elm_list_item_append(view.games_list.done_list, user_name, NULL, NULL, NULL, data);
-}
-
-
-void qd_view_new_page_show(Evas_Object *new_page_layout)
-{
-    Evas_Object *old_content;
-    //old_content = elm_layout_content_unset(view.layout, "elm.swallow.content");
-    //evas_object_hide(old_content);
-    //elm_layout_content_set(view.layout, "elm.swallow.content", new_page_layout);
-    //evas_object_show(new_page_layout);
-    elm_naviframe_item_push(view.layout, "Quizduell", NULL, NULL, new_page_layout, NULL);
-}
 
 void qd_view_games_list_page_show(void)
 {
-    elm_naviframe_item_pop(view.layout);
+    Elm_Object_Item *bot_it;
+    bot_it = elm_naviframe_bottom_item_get(view.layout);
+    elm_naviframe_item_pop_to (bot_it);
 }
 
 void qd_view_preferences_page_show(void)
 {
+    qd_view_preferences_page_add();
     elm_naviframe_item_push(view.layout, "Preferences", NULL, NULL, view.preferences.layout, NULL);
-    //elm_layout_content_set(view.layout, "elm.swallow.content", view.preferences.layout);    
 }
 
-void qd_view_game_page_show(void)
+void qd_view_game_stat_page_show(void *data)
 {
+    Evas_Object* page_layout;
     // should get opponent name
-    elm_naviframe_item_push(view.layout, "game against", NULL, NULL, view.game.layout, NULL);
-    //elm_layout_content_set(view.layout, "elm.swallow.content", view.game.layout);    
+    page_layout = qd_view_game_stat_page_add(data);
+    elm_naviframe_item_push(view.layout, "game against", NULL, NULL, page_layout, NULL);
 }
 
 void qd_view_category_page_show(void)
 {
+    
     elm_naviframe_item_push(view.layout, "Select a category", NULL, NULL, view.category.layout, NULL);
-    //elm_layout_content_set(view.layout, "elm.swallow.content", view.category.layout);    
 }
 
 void qd_view_question_page_show(void)
 {
     elm_naviframe_item_push(view.layout, "", NULL, NULL, view.category.layout, NULL);
-    //elm_layout_content_set(view.layout, "elm.swallow.content", view.question.layout);    
 }
 
 void qd_view_login_page_show(void)
 {
+    qd_view_login_page_add();
     elm_naviframe_item_push(view.layout, "login", NULL, NULL, view.login.layout, NULL);
-    //elm_layout_content_set(view.layout, "elm.swallow.content", view.login.layout);    
 }
 
-int qd_view_new_game_page_add(void)
+void qd_view_new_game_page_show(void)
 {
-    view.new_game.layout = elm_layout_add(view.win);
-    return 0;
+    qd_view_new_game_page_add();
+    elm_naviframe_item_push(view.layout, "new_game", NULL, NULL, view.new_game.layout, NULL);
 }
-int qd_view_toolbar_add(void)
-{
-    Evas_Object *btn;
-    view.toolbar.layout = elm_box_add(view.win);
-    elm_box_horizontal_set(view.toolbar.layout, EINA_TRUE);
-    evas_object_size_hint_align_set(view.toolbar.layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_size_hint_weight_set(view.toolbar.layout, EVAS_HINT_EXPAND, 0.0);
 
-    btn = elm_button_add(view.toolbar.layout);
-    elm_object_part_text_set(btn, "default", "pref");
-    elm_box_pack_end(view.toolbar.layout, btn);
-    btn = elm_button_add(view.toolbar.layout);
-    elm_object_part_text_set(btn, "default", "reload");
-    elm_box_pack_end(view.toolbar.layout, btn);
-    elm_object_part_content_set(view.layout, "elm.swallow.title", view.toolbar.layout);
-    evas_object_show(view.toolbar.layout);
-
-}
 
 void _on_exit_cb(void *data, Evas_Object *obj, void *event_info)
 {
@@ -359,7 +142,7 @@ int qd_view_main_win_add()
     evas_object_size_hint_align_set(view.win, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
     view.layout = elm_naviframe_add(view.win);
-    elm_naviframe_content_preserve_on_pop_set(view.layout, EINA_TRUE);
+    //elm_naviframe_content_preserve_on_pop_set(view.layout, EINA_TRUE);
     evas_object_show(view.layout);
 
     evas_object_size_hint_weight_set(view.layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -374,39 +157,38 @@ int qd_view_main_win_add()
 
 int qd_view_init(int argc, char **argv)
 {
+    eina_init();
+    ecore_init();
+    evas_init();
     elm_init(argc, argv);
     qd_view_main_win_add();
-    qd_view_user_indicator_add();
-    qd_view_toolbar_add();
-    qd_view_login_page_add();
+    QD_EVENT_USER_NAME_CHANGED = ecore_event_type_new();
+    view.user_ind.layout = qd_view_user_indicator_add(view.win);
     qd_view_games_list_page_add();
-    qd_view_new_game_page_add();
-    return 1;
+    elm_naviframe_item_push(view.layout, "Quizduell", view.games_list.reload_btn,
+                            view.games_list.pref_btn, view.games_list.layout, NULL);
+    return 0;
 }
 
-qd_UI_shutdown(void)
+void qd_view_shutdown(void)
 {
     elm_shutdown();
+    evas_shutdown();
+    ecore_shutdown();
+    eina_shutdown();
 }
 
 int main(int argc, char **argv)
 {
 
-    if (!qd_view_init(argc, argv))
+    if (qd_view_init(argc, argv))
     {
         return 1;
     }
 
-    elm_naviframe_item_push(view.layout, "Quizduell", view.games_list.reload_btn,
-                            view.games_list.pref_btn, view.games_list.layout, NULL);
-
-    elm_naviframe_item_push(view.layout, "Login", NULL, NULL, view.login.layout, NULL);
-    //elm_object_part_content_set(view.layout, "elm.swallow.content", view.login.layout);
-
     elm_run();
 
-    qd_UI_shutdown();
+    qd_view_shutdown();
 
-
-
+    return 0;
 }
