@@ -122,10 +122,4 @@ Eina_Bool qd_con_request_with_params(const char *api_url, Eina_Hash *params_hash
     eina_strbuf_free(request_payload);
     
     return EINA_TRUE;
-
-    _failed:
-        eina_strbuf_free(url_buf);
-        eina_strbuf_free(request_payload);
-        eina_strbuf_free(hmac_input_buf);
-        return EINA_FALSE;
 }
