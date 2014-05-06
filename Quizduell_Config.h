@@ -16,7 +16,7 @@ typedef struct _Quizduell_Config {
 
 extern Quizduell_Config qd_config;
 
-void quizduell_config_init(const Quizduell_Country_Specific_Config *qcsc);
-void quizduell_config_free(void);
+void qd_config_init(const Quizduell_Country_Specific_Config *qcsc);
+void qd_config_shutdown(void);
 
 #endif

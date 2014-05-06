@@ -1,7 +1,8 @@
+#define _GNU_SOURCE
 #include <stdio.h>
-#include <bsd/string.h>
 #include <math.h> // for abs(x) prepare_key
 #include <gcrypt.h>
+#include <Eina.h>
 #include "base64.h"
 #include "Quizduell_Config.h"
 #include "Quizduell_Crypto.h"
@@ -17,18 +18,19 @@ static void _prepare_key(const char *input_key, char *output_key)
     }
 }
 
-void aes_decrypt(char **output_data, const char *base64_encoded_input_data)
+char *qd_crypto_aes_decrypt(const char *base64_encoded_input_data)
 {
     #define GCRY_CIPHER_MODE GCRY_CIPHER_MODE_ECB
     #define GCRY_CIPHER GCRY_CIPHER_AES128   // Pick the cipher here
  
+    char *output_data = NULL;
     char aesSymKey[16];
     gcry_error_t     gcryError;
     gcry_cipher_hd_t gcryCipherHd;
     size_t           key_length = gcry_cipher_get_algo_keylen(GCRY_CIPHER);
     size_t           output_data_length;
     
-    base64_decode_alloc(base64_encoded_input_data, strlen(base64_encoded_input_data), output_data, &output_data_length);
+    base64_decode_alloc(base64_encoded_input_data, strlen(base64_encoded_input_data), &output_data, &output_data_length);
     _prepare_key(RAW_AES_KEY, aesSymKey);
  
     gcryError = gcry_cipher_open(&gcryCipherHd, GCRY_CIPHER, GCRY_CIPHER_MODE, 0);
@@ -37,7 +39,7 @@ void aes_decrypt(char **output_data, const char *base64_encoded_input_data)
         printf("gcry_cipher_open failed:  %s/%s\n",
                gcry_strsource(gcryError),
                gcry_strerror(gcryError));
-        return;
+        goto _decrypt_failed;
     }
  
     gcryError = gcry_cipher_setkey(gcryCipherHd, aesSymKey, key_length);
@@ -46,30 +48,36 @@ void aes_decrypt(char **output_data, const char *base64_encoded_input_data)
         printf("gcry_cipher_setkey failed:  %s/%s\n",
                gcry_strsource(gcryError),
                gcry_strerror(gcryError));
-        return;
+        goto _decrypt_failed;
     }
   
 
-    gcryError = gcry_cipher_decrypt(gcryCipherHd, *output_data, output_data_length, NULL, 0);
+    gcryError = gcry_cipher_decrypt(gcryCipherHd, output_data, output_data_length, NULL, 0);
     if (gcryError)
     {
         printf("gcry_cipher_decrypt failed:  %s/%s\n",
                gcry_strsource(gcryError),
                gcry_strerror(gcryError));
-        return;
+        goto _decrypt_failed;
     }
 
     // make sure the written string is terminated
-    (*output_data)[output_data_length - 1] = '\0';
+    output_data[output_data_length - 1] = '\0';
 
     // clean up after ourselves
     gcry_cipher_close(gcryCipherHd);
+
+    return output_data;
+
+    _decrypt_failed:
+      return NULL;
 }
 
-void create_hmac(char **hmac, const char *input_data)
+char *qd_crypto_create_hmac(const char *input_data)
 {
   #define MESSAGE_DIGEST_ALGO GCRY_MD_SHA256
   const size_t HMAC_KEY_LEN = 16;
+  char *hmac = NULL;
   size_t hmac_len = gcry_md_get_algo_dlen(MESSAGE_DIGEST_ALGO);
 
   gcry_md_hd_t hd;
@@ -78,7 +86,7 @@ void create_hmac(char **hmac, const char *input_data)
 
   /* Create a hash device and generate the HMAC */
   hd = NULL;
-  err = gcry_md_open (&hd, MESSAGE_DIGEST_ALGO, GCRY_MD_FLAG_HMAC);
+  err = gcry_md_open(&hd, MESSAGE_DIGEST_ALGO, GCRY_MD_FLAG_HMAC);
   if (err)
   {
     printf("Creating HMAC-SHA-256 object failed: %s",
@@ -104,39 +112,44 @@ void create_hmac(char **hmac, const char *input_data)
     goto __hashing_failed;
   }
 
-  base64_encode_alloc((const char*)hmac_ptr, hmac_len, hmac);
+  base64_encode_alloc((const char*)hmac_ptr, hmac_len, &hmac);
 
   /* Clean up */
   gcry_md_close(hd);
   hd = NULL;
 
-  return;
+  return hmac;
 
   __hashing_failed:
-    *hmac = NULL;
-    return;
+    return NULL;
   #undef MESSAGE_DIGEST_ALGO
 }
 
-void create_password_hash(char **hash, const char *password)
+char *qd_crypto_create_password_hash(const char *password)
 {
   #define MESSAGE_DIGEST_ALGO GCRY_MD_MD5
   const char PWD_HASH_PADDING[] = "SQ2zgOTmQc8KXmBP";
+  char *hash = NULL;
   size_t hash_len = gcry_md_get_algo_dlen(MESSAGE_DIGEST_ALGO);
-  char *hash_buffer = malloc(hash_len);
-  *hash = malloc(hash_len);
-  (*hash)[0] = '\0'; // using it with strlcat later, so this needs to be terminated before
+  size_t expanded_hash_len = (hash_len * 2) + 1;
+  char *hash_buffer = malloc(expanded_hash_len);
+  hash = malloc(expanded_hash_len);
   char *buffer = NULL;
   size_t input_len = 0;
+  Eina_Strbuf *expanded_hash = eina_strbuf_new();
   
   input_len = asprintf(&buffer, "%s%s", PWD_HASH_PADDING, password);
 
   /* Create a hash device and check the HASH */
   gcry_md_hash_buffer(MESSAGE_DIGEST_ALGO, (void *)(hash_buffer), (const void*)buffer, input_len);
   for (int i = 0; i < hash_len; i++) {
-      char s_val[3];
-      snprintf(s_val, sizeof(s_val), "%02x", (int)(0xff & hash_buffer[i]));
-      strlcat(*hash, s_val, hash_len);
+    eina_strbuf_append_printf(expanded_hash, "%02x", (int)(0xff & hash_buffer[i]));
   }
+
+  hash = eina_strbuf_string_steal(expanded_hash);
+  eina_strbuf_free(expanded_hash);
+
+  return hash;
+
   #undef MESSAGE_DIGEST_ALGO
 }
