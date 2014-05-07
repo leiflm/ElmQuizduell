@@ -3,7 +3,9 @@
 #include <string.h>
 #include <Eina.h>
 #include "Quizduell_Config.h"
+#include "Quizduell_View.h"
 #include "Quizduell_Connection.h"
+#include "Quizduell_Controller.h"
 
 // Account dependent
 #define USER_AGENT "Quizduell A 1.3.2"
@@ -22,18 +24,18 @@ Quizduell_Country_Specific_Config it_qcsc = {
     .encrypted_base_url = "9ddNnke+FSDNh/v5AnM0BX4gdk0WOmIFtkwkEjv+NmA="
 };
 
-int main(int arc, char *argv[])
+int main(int argc, char *argv[])
 {
     eina_init();
     qd_config_init(&de_qcsc);
+    qd_view_init(argc, argv);
     qd_con_init();
+    qd_ctrl_init();
 
-    Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)free);
-    eina_hash_add(hash, "user", strdup(qd_config.user_name));
-    eina_hash_add(hash, "pwd", strdup(qd_config.password_hash));
-    qd_con_request_with_params("users/login", hash, QD_CON_LOGIN, EINA_TRUE);
-    eina_hash_free(hash);
+    qd_ctrl_run();
 
+    qd_ctrl_shutdown();
+    qd_view_shutdown();
     qd_con_shutdown();
     qd_config_shutdown();
     eina_shutdown();

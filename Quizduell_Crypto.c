@@ -61,9 +61,6 @@ char *qd_crypto_aes_decrypt(const char *base64_encoded_input_data)
         goto _decrypt_failed;
     }
 
-    // make sure the written string is terminated
-    output_data[output_data_length - 1] = '\0';
-
     // clean up after ourselves
     gcry_cipher_close(gcryCipherHd);
 

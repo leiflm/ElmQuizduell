@@ -5,30 +5,13 @@
 #include <Evas.h>
 #include <Elementary.h>
 
+#include "Quizduell_Config.h"
 #include "view/Quizduell_View_Private.h"
-
-static char *user_name = "nobody";
-
-char *qd_ctrl_user_name_get(void)
-{
-    return user_name;
-}
 
 void qd_view_user_name_set(char *name)
 {
     ecore_event_add(QD_EVENT_USER_NAME_CHANGED, name, NULL, NULL);
 }
-
-void qd_ctrl_user_login_set(char *name, char* pw)
-{
-    user_name = name;
-    printf("logging nu: %s, pw: %s\n", name, pw);
-    // on login set new name
-    qd_view_user_name_set(name);
-
-}
-
-
 
 Eina_Bool qd_view_set_user_name_ev_hd_cb(void *data, int type, void *ev)
 {
@@ -50,7 +33,7 @@ void qd_view_set_user_ev_handler_del_cb(void *data, Evas *e, Evas_Object *obj, v
 Evas_Object *qd_view_user_indicator_add(Evas_Object *parent)
 {
     Evas_Object *box, *layout, *name_obj;
-    char *name;
+    Eina_Stringshare *name;
     Ecore_Event_Handler *hd;
 
     // use a fram as main layout obj
@@ -64,7 +47,7 @@ Evas_Object *qd_view_user_indicator_add(Evas_Object *parent)
 
     // Label for user name
     name_obj = elm_label_add(layout);
-    name = qd_ctrl_user_name_get();
+    name = eina_stringshare_add(qd_config.username);
     elm_object_part_text_set(name_obj, "default", name);
     evas_object_size_hint_align_set(name_obj, 0.0, 0.0);
     evas_object_size_hint_weight_set(name_obj, EVAS_HINT_EXPAND, 0.0); 
@@ -176,19 +159,4 @@ void qd_view_shutdown(void)
     evas_shutdown();
     ecore_shutdown();
     eina_shutdown();
-}
-
-int main(int argc, char **argv)
-{
-
-    if (qd_view_init(argc, argv))
-    {
-        return 1;
-    }
-
-    elm_run();
-
-    qd_view_shutdown();
-
-    return 0;
 }

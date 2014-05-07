@@ -6,12 +6,11 @@
 #include <Ecore_Con.h>
 #include "Quizduell_Connection.h"
 
-enum _Qd_Con_Request_Type
-{
-	QD_CON_LOGIN
-};
-
-typedef enum _Qd_Con_Request_Type Qd_Con_Request_Type;
+extern int QD_CON_USERS_CREATE;
+extern int QD_CON_USERS_UPDATE;
+extern int QD_CON_USERS_LOGIN;
+extern int QD_CON_USERS_LOGOUT;
+extern int QD_CON_GAME_STATE;
 
 Eina_Bool qd_con_init(void);
 void qd_con_shutdown(void);
@@ -23,6 +22,6 @@ void qd_con_shutdown(void);
  @param use_post Determines whether the request is done via post or get
  @return EINA_TRUE on sucess, EINA_FALSE on failure
  */
-Eina_Bool qd_con_request_with_params(const char *api_url, Eina_Hash *params_hashlist, Qd_Con_Request_Type type, Eina_Bool use_post);
+Eina_Bool qd_con_request_with_params(const char *api_url, const Eina_Hash *params_hashlist, int type, Eina_Bool use_post);
 
 #endif
