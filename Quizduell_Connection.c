@@ -169,6 +169,8 @@ Eina_Bool qd_con_request_with_params(const char *api_url, const Eina_Hash *param
     tuple = NULL;
     it = NULL;
 
+    // set some agent
+    ecore_con_url_additional_header_add(url_con, "User-Agent", "curl/7.36.0");
     // set device type
     ecore_con_url_additional_header_add(url_con, "dt", "a");
 
