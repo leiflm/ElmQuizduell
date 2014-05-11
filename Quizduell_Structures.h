@@ -3,10 +3,7 @@
 #define NO_ROUNDS_PER_GAME 6
 
 // append to list items
-typedef struct
-{
-    unsigned long id;
-} Qd_Game_Id;
+typedef unsigned long Qd_Game_Id;
 
 typedef enum
 {
@@ -31,7 +28,7 @@ typedef struct
 {
     Qd_Category cat_choices[NO_ROUNDS_PER_GAME];
     unsigned short elapsed_min;
-    unsigned long game_id;
+    Qd_Game_Id game_id;
     Eina_List *messages;
     Qd_Player opponent;
     unsigned int opponent_answers[NO_ROUNDS_PER_GAME][3];
