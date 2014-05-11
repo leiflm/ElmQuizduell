@@ -1,8 +1,8 @@
 all: /tmp/quizduell
 
 CC=clang
-CFLAGS=`pkg-config --cflags elementary eina ecore libbsd`
-LDFLAGS=`pkg-config --libs elementary eina ecore libbsd`
+CFLAGS=`pkg-config --cflags elementary eina ecore libbsd json-c`
+LDFLAGS=`pkg-config --libs elementary eina ecore libbsd json-c`
 
 CFLAGS+= -ggdb -Wall -I.
 
