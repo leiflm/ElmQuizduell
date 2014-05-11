@@ -12,7 +12,7 @@ typedef enum
 
 typedef struct
 {
-    unsigned long user_id;
+    Eina_Stringshare *user_id;
     Eina_Stringshare *name;
     unsigned int avatar;
 } Qd_Player;
@@ -27,14 +27,14 @@ typedef enum
 typedef struct
 {
     Qd_Category cat_choices[NO_ROUNDS_PER_GAME];
-    unsigned short elapsed_min;
+    int elapsed_min;
     Qd_Game_Id game_id;
     Eina_List *messages;
     Qd_Player opponent;
     unsigned int opponent_answers[NO_ROUNDS_PER_GAME][3];
-    unsigned int rating_bonus;
+    int rating_bonus;
     Qd_Game_State state;
-    unsigned int your_answers[NO_ROUNDS_PER_GAME][3];
+    int your_answers[NO_ROUNDS_PER_GAME][3];
     Eina_Bool your_turn;
 } Qd_Game_Info;
 
