@@ -9,6 +9,8 @@
 #include <Elementary.h>
 
 #include "Quizduell_View.h"
+#include "Quizduell_Controller.h"
+#include "Quizduell_Structures.h"
 
 typedef struct
 {
@@ -58,11 +60,22 @@ typedef struct
 
 Qd_UI view;
 
+typedef struct
+{
+    char *opp_name;
+    int round;
+
+
+
+} Game_Data; 
+
 int QD_EVENT_USER_NAME_CHANGED;
 
 // private.h
 int qd_view_main_win_add(void);
 Evas_Object *qd_view_user_indicator_add(Evas_Object *parent);
+Evas_Object *qd_view_category_page_add(Evas_Object *parent);
+Evas_Object *qd_view_question_page_add(Evas_Object *parent);
 //int qd_view_toolbar_add(void);
 int qd_view_login_page_add(void);
 int qd_view_games_list_page_add(void);

@@ -11,6 +11,7 @@ void qd_view_games_list_page_show(void);
 void qd_view_login_page_show(void);
 void qd_view_new_game_page_show(void);
 void qd_view_preferences_page_show(void);
+void qd_view_question_page_show(void);
 //void qd_view_game_stat_page_show(void);
 void qd_view_game_stat_page_show(void *data);
 Evas_Object *qd_view_game_stat_page_add(void *data);

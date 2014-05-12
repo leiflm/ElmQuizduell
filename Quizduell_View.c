@@ -17,7 +17,7 @@ Eina_Bool qd_view_set_user_name_ev_hd_cb(void *data, int type, void *ev)
 {
     Evas_Object *tp = (Evas_Object *) data;
     char *text = (char *) ev;
-    printf("setting new names\n");
+    //printf("setting new names\n");
 
     elm_object_part_text_set(tp, "default", text);
     return ECORE_CALLBACK_PASS_ON;
@@ -82,19 +82,27 @@ void qd_view_game_stat_page_show(void *data)
 {
     Evas_Object* page_layout;
     // should get opponent name
-    page_layout = qd_view_game_stat_page_add(data);
+    page_layout = qd_view_game_stat_page_add(view.win);
     elm_naviframe_item_push(view.layout, "game against", NULL, NULL, page_layout, NULL);
 }
 
 void qd_view_category_page_show(void)
 {
+    Evas_Object* page_layout;
+    // should get data 
+    page_layout = qd_view_category_page_add(view.win);
     
-    elm_naviframe_item_push(view.layout, "Select a category", NULL, NULL, view.category.layout, NULL);
+    elm_naviframe_item_push(view.layout, "Select a category", NULL, NULL, page_layout, NULL);
 }
 
 void qd_view_question_page_show(void)
 {
-    elm_naviframe_item_push(view.layout, "", NULL, NULL, view.category.layout, NULL);
+    Evas_Object* page_layout;
+    Elm_Object_Item *it;
+    // should get data 
+    page_layout = qd_view_question_page_add(view.win);
+    it = elm_naviframe_item_push(view.layout, "", NULL, NULL, page_layout, NULL);
+    elm_naviframe_item_title_enabled_set(it, EINA_FALSE, EINA_FALSE);
 }
 
 void qd_view_login_page_show(void)
@@ -106,7 +114,7 @@ void qd_view_login_page_show(void)
 void qd_view_new_game_page_show(void)
 {
     qd_view_new_game_page_add();
-    elm_naviframe_item_push(view.layout, "new_game", NULL, NULL, view.new_game.layout, NULL);
+    elm_naviframe_item_push(view.layout, "new game", NULL, NULL, view.new_game.layout, NULL);
 }
 
 

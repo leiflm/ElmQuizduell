@@ -1,6 +1,5 @@
-#ifndef QUIZDUELL_STRUCTURES
-#define QUIZDUELL_STRUCTURES
-
+#ifndef _QUIZDUELL_STRUCTURES_H_
+#define _QUIZDUELL_STRUCTURES_H_
 #include <time.h>
 #include <Eina.h>
 

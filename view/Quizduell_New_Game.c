@@ -9,15 +9,15 @@ static void qd_view_new_game_clicked_rand_cb(void *data, Evas_Object *btn, void 
 
 static void qd_view_new_game_clicked_search_cb(void *data, Evas_Object *btn, void *event_info)
 {
-    printf("Serch player\n");
+    printf("Search player\n");
 }
 
 int qd_view_new_game_page_add(void)
 {
     Evas_Object *user_ind;
     view.new_game.layout = elm_box_add(view.win);
-    evas_object_size_hint_align_set(view.new_game.layout, EVAS_HINT_FILL, 0.0);
-    evas_object_size_hint_weight_set(view.new_game.layout, EVAS_HINT_EXPAND, 0.0);
+    evas_object_size_hint_align_set(view.new_game.layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    evas_object_size_hint_weight_set(view.new_game.layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
     user_ind = qd_view_user_indicator_add(view.new_game.layout);
     elm_box_pack_end(view.new_game.layout, user_ind);

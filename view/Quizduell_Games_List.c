@@ -21,7 +21,6 @@ static void qd_view_games_list_pref_clicked_cb(void *data, Evas_Object *obj, voi
 static void qd_view_games_list_new_game_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
     qd_view_new_game_page_show();
-   // elm_naviframe_item_push(view.layout, "new_game", NULL, NULL, view.new_game.layout, NULL);
 }
 
 int qd_view_games_list_page_add(void)
