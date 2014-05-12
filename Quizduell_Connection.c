@@ -89,14 +89,13 @@ static Eina_List *_get_sorted_list_for_params(const Eina_Hash *params_hashlist)
 
 static Eina_Stringshare *_create_date_str(void)
 {
-    const size_t date_str_length = 64 * sizeof(char);
-    char *date_str = malloc(date_str_length);
+    char date_str[64];
     time_t t;
     struct tm *tmp;
 
     t = time(NULL);
     tmp = localtime(&t);
-    strftime(date_str, date_str_length, "%F %T", tmp);
+    strftime(date_str, sizeof(date_str), "%F %T", tmp);
 
     return eina_stringshare_add(date_str);
 }
