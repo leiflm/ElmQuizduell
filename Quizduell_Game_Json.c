@@ -75,17 +75,28 @@ Qd_Game_Info *json_parse_game(json_object *jobj)
     return game_info;
 }
 
-void json_parse_player(json_object *jobj, Qd_Player *p)
+Eina_Bool json_parse_player(json_object *jobj, Qd_Player *p)
 {
     json_object *tmp = NULL;
 
     tmp = json_object_object_get(jobj, "user_id");
+    if (!tmp)
+    {
+        return EINA_FALSE;
+    }
     p->user_id = atol(json_object_get_string(tmp));
     tmp = json_object_object_get(jobj, "name");
+    if (!tmp)
+    {
+        return EINA_FALSE;
+    }
     p->name = eina_stringshare_add(json_object_get_string(tmp));
+
+    return EINA_TRUE;
 }
 
-void json_parse_current_game_info(json_object * jobj) {
+Eina_Bool json_parse_current_game_info(json_object * jobj)
+{
     json_object *user = NULL, *tmp = NULL;
     array_list *arr = NULL;
     int i = 0;
@@ -93,6 +104,10 @@ void json_parse_current_game_info(json_object * jobj) {
     Qd_Game_Info *game = NULL;
 
     user = json_object_object_get(jobj, "user");
+    if (!user)
+    {
+        return EINA_FALSE;
+    }
     json_parse_player(user, &player);
 
     // parse games
@@ -103,4 +118,6 @@ void json_parse_current_game_info(json_object * jobj) {
         game = json_parse_game(o);
         games = eina_list_append(games, game);
     }
+
+    return EINA_TRUE;
 }
