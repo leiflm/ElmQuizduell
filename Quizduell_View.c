@@ -117,6 +117,26 @@ void qd_view_new_game_page_show(void)
     elm_naviframe_item_push(view.layout, "new game", NULL, NULL, view.new_game.layout, NULL);
 }
 
+void qd_view_message_ok_btn_clicked_cb(void *data, Evas_Object* obj, void *event)
+{
+    Evas_Object *popup = (Evas_Object *) data;
+    evas_object_hide(popup);
+    evas_object_del(popup);
+}
+
+void qd_view_info_message_show(const char *title, const char *msg)
+{
+    Evas_Object *popup, *button;
+    popup = elm_popup_add(view.layout);
+    elm_object_part_text_set(popup, "title,text", title);
+    elm_object_part_text_set(popup, "default", msg);
+    button = elm_button_add(popup);
+    elm_object_part_text_set(button, "default", "OK");
+    evas_object_smart_callback_add(button, "clicked", qd_view_message_ok_btn_clicked_cb, popup);
+    elm_object_part_content_set(popup, "button1", button);
+    evas_object_show(popup);
+}
+
 
 void _on_exit_cb(void *data, Evas_Object *obj, void *event_info)
 {
