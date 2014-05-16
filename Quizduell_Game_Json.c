@@ -4,7 +4,10 @@
 #include "Quizduell_Controller.h"
 #include "Quizduell_Structures.h"
 
-Qd_Game_Info *json_parse_game(json_object *jobj)
+static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj);
+static Eina_Bool _json_parse_player(json_object *jobj, Qd_Player *p);
+
+static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj)
 {
     Qd_Game_Info *game_info = malloc(sizeof(Qd_Game_Info));
     json_object *tmp = NULL, *o = NULL;
@@ -70,17 +73,16 @@ Qd_Game_Info *json_parse_game(json_object *jobj)
     game_info->messages = NULL;
 
     tmp = json_object_object_get(jobj, "opponent");
-    json_parse_player(tmp, &(game_info->opponent));
+    _json_parse_player(tmp, &(game_info->opponent));
 
     return game_info;
 }
 
-Eina_Bool json_parse_player(json_object *jobj, Qd_Player *p)
+static Eina_Bool _json_parse_player(json_object *jobj, Qd_Player *p)
 {
     json_object *tmp = NULL;
 
-    tmp = json_object_object_get(jobj, "user_id");
-    if (!tmp)
+    if (!(tmp = json_object_object_get(jobj, "user_id")))
     {
         return EINA_FALSE;
     }
@@ -95,27 +97,32 @@ Eina_Bool json_parse_player(json_object *jobj, Qd_Player *p)
     return EINA_TRUE;
 }
 
-Eina_Bool json_parse_current_game_info(json_object * jobj)
+Eina_Bool json_parse_current_game_info(const char *json)
 {
     json_object *user = NULL, *tmp = NULL;
     array_list *arr = NULL;
     int i = 0;
     int no_games = 0;
     Qd_Game_Info *game = NULL;
+    json_object *jobj = NULL;
 
-    user = json_object_object_get(jobj, "user");
-    if (!user)
+    if (!(jobj = json_tokener_parse(json)))
     {
         return EINA_FALSE;
     }
-    json_parse_player(user, &player);
+
+    if (!(user = json_object_object_get(jobj, "user")))
+    {
+        return EINA_FALSE;
+    }
+    _json_parse_player(user, &player);
 
     // parse games
     tmp = json_object_object_get(user, "games"); // array of ints
     for (arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp); i < no_games; i++)
     {
         json_object *o = json_object_array_get_idx(tmp, i);
-        game = json_parse_game(o);
+        game = _json_parse_game_info_game(o);
         games = eina_list_append(games, game);
     }
 
