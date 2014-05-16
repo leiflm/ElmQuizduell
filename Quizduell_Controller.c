@@ -84,7 +84,7 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
     printf("Login completed\n");
     printf("%s\n", eina_strbuf_string_get(bytes));
 
-    json_parse_current_game_info(server_response);
+    json_parse_login(server_response);
 
     // on login set new name
     // FIXME: use stringshare all over the place!

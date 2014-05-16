@@ -128,3 +128,8 @@ Eina_Bool json_parse_current_game_info(const char *json)
 
     return EINA_TRUE;
 }
+
+Eina_Bool json_parse_login(const char *json)
+{
+    return json_parse_current_game_info(json);
+}
