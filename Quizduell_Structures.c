@@ -38,4 +38,12 @@ void qd_game_info_free(Qd_Game_Info *game)
         qd_message_free(m);
     }
     qd_player_free(game->opponent);
+
+    for (int i = 0; i < NO_ROUNDS_PER_GAME; ++i)
+    {
+        for (int j = 0; j < NO_QUESTIONS_PER_CATEGORY; ++j)
+        {
+            qd_question_free(game->questions[i][j]);
+        }
+    }
 }
