@@ -10,6 +10,10 @@ void qd_message_free(Qd_Message *m) {
 }
 
 void qd_player_free(Qd_Player *p) {
+    if (!p)
+    {
+        return;
+    }
     eina_stringshare_del(p->name);
     free(p);
 }
