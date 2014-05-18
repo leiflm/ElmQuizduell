@@ -5,7 +5,7 @@
 #include "Quizduell_Structures.h"
 
 static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj);
-static Eina_Bool _json_parse_player(json_object *jobj, Qd_Player *p);
+static Qd_Player *_json_parse_player(json_object *jobj);
 
 static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj)
 {
@@ -73,28 +73,29 @@ static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj)
     game_info->messages = NULL;
 
     tmp = json_object_object_get(jobj, "opponent");
-    _json_parse_player(tmp, &(game_info->opponent));
+    game_info->opponent = _json_parse_player(tmp);
 
     return game_info;
 }
 
-static Eina_Bool _json_parse_player(json_object *jobj, Qd_Player *p)
+static Qd_Player *_json_parse_player(json_object *jobj)
 {
+    Qd_Player *p = malloc(sizeof(Qd_Player));
     json_object *tmp = NULL;
 
     if (!(tmp = json_object_object_get(jobj, "user_id")))
     {
-        return EINA_FALSE;
+        return NULL;
     }
     p->user_id = atol(json_object_get_string(tmp));
     tmp = json_object_object_get(jobj, "name");
     if (!tmp)
     {
-        return EINA_FALSE;
+        return NULL;
     }
     p->name = eina_stringshare_add(json_object_get_string(tmp));
 
-    return EINA_TRUE;
+    return p;
 }
 
 Eina_Bool json_parse_current_game_info(const char *json)
@@ -115,7 +116,11 @@ Eina_Bool json_parse_current_game_info(const char *json)
     {
         return EINA_FALSE;
     }
-    _json_parse_player(user, &player);
+    qd_player_free(player);
+    if (!(player = _json_parse_player(user)))
+    {
+        return EINA_FALSE;
+    }
 
     // parse games
     tmp = json_object_object_get(user, "games"); // array of ints

@@ -11,6 +11,7 @@ void qd_message_free(Qd_Message *m) {
 
 void qd_player_free(Qd_Player *p) {
     eina_stringshare_del(p->name);
+    free(p);
 }
 
 void qd_question_free(Qd_Question *q)
@@ -36,5 +37,5 @@ void qd_game_info_free(Qd_Game_Info *game)
     {
         qd_message_free(m);
     }
-    qd_player_free(&(game->opponent));
+    qd_player_free(game->opponent);
 }

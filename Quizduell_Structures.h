@@ -74,7 +74,7 @@ typedef struct
     int elapsed_min;
     Qd_Game_Id game_id;
     Eina_List *messages;
-    Qd_Player opponent;
+    Qd_Player *opponent;
     int opponent_answers[NO_ROUNDS_PER_GAME][3];
     Qd_Question* questions[NO_ROUNDS_PER_GAME][3];
     int rating_bonus;

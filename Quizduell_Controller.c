@@ -12,7 +12,7 @@
 static void _qd_ctrl_data_free(void);
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 
-Qd_Player player;
+Qd_Player *player;
 Eina_List *games; // list of Qd_Game_Info*
 
 static Eina_Stringshare *_tmp_username = NULL;
@@ -96,7 +96,8 @@ void qd_ctrl_games_list_update(void)
 Qd_Game_Info *qd_view_test_make_game(void)
 {
    Qd_Game_Info *game = calloc(1, sizeof(Qd_Game_Info));
-   game->opponent.name = "Test Player";
+   game->opponent = calloc(1, sizeof(Qd_Player));
+   game->opponent->name = "Test Player";
    game->state = QD_GAME_STATE_PLAYING;
    game->your_turn = EINA_TRUE;
    return game;
@@ -148,7 +149,7 @@ static void _qd_ctrl_data_free(void)
 
     EINA_LIST_FREE(games, game)
     {
-        printf("opponent: %s\n", game->opponent.name);
+        printf("opponent: %s\n", game->opponent->name);
         printf("game_id: %li\n", game->game_id);
         for (int i = 0; i < 18; ++i)
         {
@@ -158,5 +159,5 @@ static void _qd_ctrl_data_free(void)
         }
         qd_game_info_free(game);
     }
-    qd_player_free(&player);
+    qd_player_free(player);
 }

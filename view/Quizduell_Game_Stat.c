@@ -49,11 +49,11 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
     int i;
     layout = elm_table_add(parent);
 
-    user_ind = qd_view_game_stat_ind_add(layout, &player);
+    user_ind = qd_view_game_stat_ind_add(layout, player);
     evas_object_size_hint_weight_set(user_ind, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(user_ind, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_table_pack(layout, user_ind, 0, 0, 1, 1);
-    opp_ind = qd_view_game_stat_ind_add(layout, &game->opponent);
+    opp_ind = qd_view_game_stat_ind_add(layout, game->opponent);
     evas_object_size_hint_weight_set(opp_ind, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(opp_ind, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_table_pack(layout, opp_ind, 2, 0, 1, 1);

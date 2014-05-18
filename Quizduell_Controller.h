@@ -3,7 +3,7 @@
 
 #include <Quizduell_Structures.h>
 
-extern Qd_Player player;
+extern Qd_Player *player;
 extern Eina_List *games; // list of Qd_Game_Info*
 
 Eina_Bool qd_ctrl_init(void);
