@@ -138,3 +138,67 @@ Eina_Bool json_parse_login(const char *json)
 {
     return json_parse_current_game_info(json);
 }
+
+Qd_Question *_json_parse_question(json_object *jobj)
+{
+    Qd_Question *q = malloc(sizeof(Qd_Question));
+    json_object *tmp = NULL;
+
+    #define GET_VAL(val) \
+        if (!(tmp = json_object_object_get(tmp, val))) \
+            return NULL
+        GET_VAL("cat_id");
+        q->cat_id = json_object_get_int(tmp);
+        GET_VAL("cat_name");
+        q->cat_name = eina_stringshare_add(json_object_get_string(tmp));
+        GET_VAL("correct");
+        q->correct = eina_stringshare_add(json_object_get_string(tmp));
+        GET_VAL("q_id");
+        q->q_id = json_object_get_int64(tmp);
+        GET_VAL("question");
+        q->question = eina_stringshare_add(json_object_get_string(tmp));
+        GET_VAL("wrong1");
+        q->wrong[0] = eina_stringshare_add(json_object_get_string(tmp));
+        GET_VAL("wrong2");
+        q->wrong[1] = eina_stringshare_add(json_object_get_string(tmp));
+        GET_VAL("wrong3");
+        q->wrong[2] = eina_stringshare_add(json_object_get_string(tmp));
+    #undef GET_VAL
+
+    return q;
+}
+
+Qd_Game_Info *json_parse_specific_game_info(const char *json)
+{
+    json_object *user = NULL, *tmp = NULL;
+    array_list *arr = NULL;
+    int i = 0, no_questions = 0, rnd = 0;
+    Qd_Game_Info *game = NULL;
+    json_object *jobj = NULL;
+
+    if (!(jobj = json_tokener_parse(json)))
+    {
+        return NULL;
+    }
+
+    if (!(tmp = json_object_object_get(user, "game")))
+    {
+        return NULL;
+    }
+    game = _json_parse_game_info_game(tmp);
+
+    // parse questions
+    tmp = json_object_object_get(user, "questions"); // array of questions
+    no_questions = json_object_array_length(tmp);
+    arr = json_object_get_array(tmp);
+    for (rnd = 0; rnd < NO_ROUNDS_PER_GAME; rnd++)
+    {
+        for (i = rnd; i < no_questions; i += NO_QUESTIONS_PER_CATEGORY)
+        {
+            json_object *o = json_object_array_get_idx(tmp, i);
+            game->questions[rnd][i] = _json_parse_question(o);
+        }
+    }
+
+    return game;
+}
