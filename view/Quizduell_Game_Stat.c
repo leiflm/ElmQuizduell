@@ -1,6 +1,6 @@
 #include "Quizduell_View_Private.h"
 
-Evas_Object *qd_view_game_stat_ind_add(Evas_Object *parent)
+Evas_Object *qd_view_game_stat_ind_add(Evas_Object *parent, Qd_Player *pl)
 {
     Evas_Object *label, *frame;
     frame = elm_frame_add(parent);
@@ -11,7 +11,7 @@ Evas_Object *qd_view_game_stat_ind_add(Evas_Object *parent)
 
     label = elm_label_add(frame);
     elm_object_part_content_set(frame, "default", label);
-    elm_object_part_text_set(label, "default", "user name");
+    elm_object_part_text_set(label, "default", pl->name);
     evas_object_show(label);
 
 
@@ -43,17 +43,17 @@ void qd_view_game_stat_retire_clicked_cb(void *data, Evas_Object *obj, void *ev)
     printf("cant retire\n");
 }
 
-Evas_Object *qd_view_game_stat_page_add(void *data)
+Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
 {
     Evas_Object *layout, *user_ind, *opp_ind, *game_res, *retire_btn, *pl_btn;
     int i;
-    layout = elm_table_add(view.win);
+    layout = elm_table_add(parent);
 
-    user_ind = qd_view_game_stat_ind_add(layout);
+    user_ind = qd_view_game_stat_ind_add(layout, &player);
     evas_object_size_hint_weight_set(user_ind, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(user_ind, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_table_pack(layout, user_ind, 0, 0, 1, 1);
-    opp_ind = qd_view_game_stat_ind_add(layout);
+    opp_ind = qd_view_game_stat_ind_add(layout, &game->opponent);
     evas_object_size_hint_weight_set(opp_ind, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(opp_ind, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_table_pack(layout, opp_ind, 2, 0, 1, 1);

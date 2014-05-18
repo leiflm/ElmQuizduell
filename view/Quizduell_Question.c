@@ -1,7 +1,6 @@
 #include "Quizduell_View_Private.h"
 
 #define SEC_PER_QUESTION 10.0
-
 typedef struct
 {
     Evas_Object *btns[4];
@@ -16,37 +15,6 @@ typedef struct
 void qd_view_question_answer_clicked_cb(void *data, Evas_Object* obj, void *ev);
 void qd_view_question_questions_text_set(Qd_Question_Elem *qqe);
 
-Eina_Bool _animator_cb(void *data)
-{
-    double val, new_val, freq;
-    int i;
-    Qd_Question_Elem *qqe = (Qd_Question_Elem *) data;
-    val = elm_progressbar_value_get(qqe->bar);
-    freq = ecore_animator_frametime_get();
-    // should use gettimeofday etc....
-    new_val = (SEC_PER_QUESTION * val - freq)/SEC_PER_QUESTION;
-
-    if (new_val <= 0)
-    {
-        // del clicked callbacks
-        for (i = 0; i < 4; i++)
-        {
-            evas_object_smart_callback_del(qqe->btns[i], "clicked", qd_view_question_answer_clicked_cb);
-        }
-        elm_naviframe_item_pop(view.layout);
-        return EINA_FALSE;
-    }
-    elm_progressbar_value_set(qqe->bar, new_val);
-    return EINA_TRUE;
-}
-
-void qd_view_question_next_cb(void *data, Evas *e, Evas_Object *obj, void *ev)
-{
-    Qd_Question_Elem *qqe = (Qd_Question_Elem *) data;
-    elm_flip_go(qqe->flip, ELM_FLIP_ROTATE_Y_CENTER_AXIS);
-    qd_view_question_questions_text_set(qqe);
-}
-
 void qd_view_question_question_finished(Qd_Question_Elem *qqe)
 {
     int i;
@@ -55,7 +23,43 @@ void qd_view_question_question_finished(Qd_Question_Elem *qqe)
     {
         evas_object_smart_callback_del(qqe->btns[i], "clicked", qd_view_question_answer_clicked_cb);
     }
-    
+}
+
+Eina_Bool _animator_cb(void *data)
+{
+    double val, new_val, freq;
+    Qd_Question_Elem *qqe = (Qd_Question_Elem *) data;
+    val = elm_progressbar_value_get(qqe->bar);
+    freq = ecore_animator_frametime_get();
+    // should use gettimeofday etc....
+    new_val = (SEC_PER_QUESTION * val - freq)/SEC_PER_QUESTION;
+
+    if (new_val <= 0)
+    {
+        qd_view_question_question_finished(qqe);
+        return EINA_FALSE;
+    }
+    elm_progressbar_value_set(qqe->bar, new_val);
+    return EINA_TRUE;
+}
+
+void qd_view_question_next_clicked_cb(void *data, Evas *e, Evas_Object *obj, void *ev)
+{
+    Qd_Question_Elem *qqe = (Qd_Question_Elem *) data;
+
+    // check if last question
+    if (qqe->no == 3)
+    {
+        // send answers to ctrl
+        // qd_ctrl_question_answers();
+        elm_naviframe_item_pop(view.layout);
+        return;
+    }
+    // hide question
+    elm_flip_go(qqe->flip, ELM_FLIP_ROTATE_Y_CENTER_AXIS);
+    // set new question / answers and hide
+    qd_view_question_questions_text_set(qqe);
+    // reveal
 }
 
 void qd_view_question_page_del_cb(void *data, Evas *e, Evas_Object *obj, void *ev)
@@ -68,22 +72,21 @@ void qd_view_question_answer_clicked_cb(void *data, Evas_Object* obj, void *ev)
 {
     Qd_Question_Elem *qqe = (Qd_Question_Elem *) data;
     int i, ans;
+    // check which was clicked
     for (i = 0; i < 4; i++)
     {
         if (obj == qqe->btns[i])
             ans = i;
-
-        evas_object_smart_callback_del(qqe->btns[i], "clicked", qd_view_question_answer_clicked_cb);
-
     }
+    ecore_animator_del(qqe->timer);
+    qd_view_question_question_finished(qqe);
+
     printf("answer %i\n", ans);
     // check answer here or ...
     if (ans == 0)
         evas_object_color_set(obj, 0, 255, 0, 255);
     else
         evas_object_color_set(obj, 255, 0, 0, 255);
-
-
 }
 
 void qd_view_question_questions_text_set(Qd_Question_Elem *qqe)
@@ -91,7 +94,6 @@ void qd_view_question_questions_text_set(Qd_Question_Elem *qqe)
     int i;
 
     elm_object_part_text_set(qqe->question, "default", "question");
-    elm_object_part_text_set(qqe->frame, "default", "category");
     for (i = 0; i < 4; i++)
     {
         evas_object_hide(qqe->btns[i]);
@@ -101,6 +103,7 @@ void qd_view_question_questions_text_set(Qd_Question_Elem *qqe)
     }
     evas_object_hide(qqe->bar);
     elm_progressbar_value_set(qqe->bar, 1.0);
+    qqe->no++;
 }
 
 void qd_view_question_reveal_clicked_cb(void *data, Evas_Object* obj, void *ev)
@@ -108,6 +111,8 @@ void qd_view_question_reveal_clicked_cb(void *data, Evas_Object* obj, void *ev)
     Qd_Question_Elem *qqe = (Qd_Question_Elem *) data;
     int i;
     printf("clicked: %p\n", obj);
+    // set text content of objects/questions/answers
+    qd_view_question_questions_text_set(qqe);
     elm_flip_go(qqe->flip, ELM_FLIP_ROTATE_Y_CENTER_AXIS);
     for (i = 0; i < 4; i++)
     {
@@ -117,13 +122,14 @@ void qd_view_question_reveal_clicked_cb(void *data, Evas_Object* obj, void *ev)
     qqe->timer = ecore_animator_add(_animator_cb, qqe);
 }
 
+//Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Question_Info_Set *qqt)
 Evas_Object *qd_view_question_page_add(Evas_Object *parent)
 {
     Evas_Object* layout;
     Evas_Object* front_label;
     Qd_Question_Elem *qqe;
     qqe = malloc(sizeof(Qd_Question_Elem));
-    qqe->no = 0;
+    qqe->no = -1;
 
     layout = elm_table_add(parent);
     evas_object_event_callback_add(layout, EVAS_CALLBACK_DEL, qd_view_question_page_del_cb, qqe);
@@ -134,7 +140,7 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent)
 
     qqe->frame = elm_frame_add(layout);
     front_label = elm_image_add(layout);
-    elm_image_file_set(front_label, "/tmp/image.png", NULL);
+    elm_image_file_set(front_label, "/tmp/undo.svg", NULL);
 
     qqe->question = elm_label_add(qqe->frame);
 
@@ -143,7 +149,7 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent)
     evas_object_size_hint_align_set(qqe->frame, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_size_hint_weight_set(qqe->frame, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_show(qqe->frame);
-    evas_object_hide(qqe->question);
+    evas_object_event_callback_add(qqe->frame, EVAS_CALLBACK_MOUSE_UP, qd_view_question_next_clicked_cb, qqe);
 
     evas_object_smart_callback_add(front_label, "clicked", qd_view_question_reveal_clicked_cb, qqe);
     evas_object_show(front_label);
@@ -178,13 +184,8 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent)
     evas_object_size_hint_weight_set(qqe->bar, EVAS_HINT_EXPAND, 0.0);
 
     elm_table_pack(layout, qqe->bar, 0, 3, 2, 1);
+    elm_object_part_text_set(qqe->frame, "default", "category");
 
-
-    // set text content of objects/questions/answers
-    qd_view_question_questions_text_set(qqe);
-
-
-    
     return layout;
 }
 

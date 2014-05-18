@@ -8,9 +8,14 @@
 #include "Quizduell_Config.h"
 #include "view/Quizduell_View_Private.h"
 
-void qd_view_user_name_set(char *name)
+void qd_view_user_name_set(const char *name)
 {
-    ecore_event_add(QD_EVENT_USER_NAME_CHANGED, name, NULL, NULL);
+    char *str;
+    size_t len;
+    len = strlen(name) + 1;
+    str = malloc(len);
+    snprintf(str, len, "%s", name);
+    ecore_event_add(QD_EVENT_USER_NAME_CHANGED, str, NULL, str);
 }
 
 Eina_Bool qd_view_set_user_name_ev_hd_cb(void *data, int type, void *ev)
@@ -64,10 +69,10 @@ Evas_Object *qd_view_user_indicator_add(Evas_Object *parent)
     return layout;
 }
 
-
 void qd_view_games_list_page_show(void)
 {
     Elm_Object_Item *bot_it;
+    qd_ctrl_games_list_update();
     bot_it = elm_naviframe_bottom_item_get(view.layout);
     elm_naviframe_item_pop_to (bot_it);
 }
@@ -78,11 +83,11 @@ void qd_view_preferences_page_show(void)
     elm_naviframe_item_push(view.layout, "Preferences", NULL, NULL, view.preferences.layout, NULL);
 }
 
-void qd_view_game_stat_page_show(void *data)
+void qd_view_game_stat_page_show(Qd_Game_Info *game)
 {
     Evas_Object* page_layout;
     // should get opponent name
-    page_layout = qd_view_game_stat_page_add(view.win);
+    page_layout = qd_view_game_stat_page_add(view.win, game);
     elm_naviframe_item_push(view.layout, "game against", NULL, NULL, page_layout, NULL);
 }
 

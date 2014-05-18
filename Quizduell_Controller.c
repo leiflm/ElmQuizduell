@@ -64,6 +64,52 @@ void qd_ctrl_user_login(char *name, char *pw)
     free(_password_hash);
 }
 
+
+void qd_ctrl_game_details(Qd_Game_Info *game)
+{
+   qd_view_game_stat_page_show(game);
+}
+
+void qd_ctrl_games_list_update(void)
+{
+    Eina_List *l;
+    Qd_Game_Info *game;
+    qd_view_games_list_clear();
+    EINA_LIST_FOREACH(games, l, game)
+    {
+        if (game->state == QD_GAME_STATE_PLAYING)
+        {
+            if (game->your_turn)
+            {
+                qd_view_games_list_active_item_add(game);
+            }
+            else
+            {
+                qd_view_games_list_inactive_item_add(game);
+            }
+        }
+        else
+            qd_view_games_list_done_item_add(game);
+    }
+}
+
+Qd_Game_Info *qd_view_test_make_game(void)
+{
+   Qd_Game_Info *game = calloc(1, sizeof(Qd_Game_Info));
+   game->opponent.name = "Test Player";
+   game->state = QD_GAME_STATE_PLAYING;
+   game->your_turn = EINA_TRUE;
+   return game;
+}
+
+void qd_ctrl_game_new_random_player(void)
+{
+    Qd_Game_Info *game = qd_view_test_make_game();
+    printf("Random player\n");
+    games = eina_list_append(games, game);
+    qd_view_games_list_page_show();
+}
+
 // static void _qd_ctrl_user_login_success()
 // {
 //     qd_config.username = _tmp_username;
@@ -92,6 +138,7 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
 
     eina_strbuf_free(bytes);
 
+    //qd_view_games_list_page_show();
     return EINA_TRUE;
 }
 

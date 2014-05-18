@@ -76,6 +76,7 @@ int qd_view_main_win_add(void);
 Evas_Object *qd_view_user_indicator_add(Evas_Object *parent);
 Evas_Object *qd_view_category_page_add(Evas_Object *parent);
 Evas_Object *qd_view_question_page_add(Evas_Object *parent);
+Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game);
 //int qd_view_toolbar_add(void);
 int qd_view_login_page_add(void);
 int qd_view_games_list_page_add(void);

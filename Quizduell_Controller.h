@@ -16,12 +16,16 @@ void qd_ctrl_user_login(char *name, char* pw);
 void qd_ctrl_games_list_reload(void);
 
 // start a new game against a random player
-void qd_ctrl_game_random_player_new(void);
+void qd_ctrl_game_new_random_player(void);
 
 // search for player
 void qd_ctrl_game_player_search(char *name);
 
-// append to 
+// update view lists
+void qd_ctrl_games_list_update(void);
+
+// Get data/details for specified game and show stat page afterwards
+void qd_ctrl_game_details(Qd_Game_Info *game);
 
 // list of Qd_Game_Info
 Eina_List *Games;

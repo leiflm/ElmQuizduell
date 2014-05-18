@@ -2,14 +2,13 @@
 
 static void qd_view_new_game_clicked_rand_cb(void *data, Evas_Object *btn, void *event_info)
 {
-    printf("Random player\n");
-    qd_view_games_list_active_item_add("test Player", NULL);
-    qd_view_games_list_page_show();
+    qd_ctrl_game_new_random_player();
 }
 
 static void qd_view_new_game_clicked_search_cb(void *data, Evas_Object *btn, void *event_info)
 {
     printf("Search player\n");
+    qd_view_info_message_show("Not implemented", "Search Player");
 }
 
 int qd_view_new_game_page_add(void)

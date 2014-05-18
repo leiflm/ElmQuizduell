@@ -22,7 +22,6 @@ static void qd_view_login_page_clicked_ok_cb(void *data, Evas_Object *btn, void 
     char *un, *pw;
     qd_view_user_data_from_entry_get(&un, &pw);
     qd_ctrl_user_login(un, pw);
-    qd_view_games_list_page_show();
 }
 
 int qd_view_login_page_add(void)

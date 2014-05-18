@@ -10,6 +10,7 @@ void qd_view_user_data_set(char *name, Evas_Object *icon)
 
 static void qd_view_games_list_reload_clicked_cb(void *data, Evas_Object* obj, void *ev)
 {
+    qd_ctrl_games_list_update();
     printf("clicked reload\n");
 }
 
@@ -87,41 +88,48 @@ int qd_view_games_list_page_add(void)
     elm_list_mode_set(_list_var, ELM_LIST_EXPAND); \
     elm_object_part_text_set(frame, "default", _label_text); \
     elm_object_part_content_set(frame, "default", _list_var); \
+    elm_list_select_mode_set(_list_var, ELM_OBJECT_SELECT_MODE_ALWAYS); \
     elm_list_go(_list_var)
 
     GAMES_LIST_ADD(view.games_list.active_list, "Your turn");
-    elm_list_select_mode_set(view.games_list.active_list, ELM_OBJECT_SELECT_MODE_ALWAYS);
+    //elm_list_select_mode_set(view.games_list.active_list, ELM_OBJECT_SELECT_MODE_ALWAYS);
     GAMES_LIST_ADD(view.games_list.inactive_list, "Waiting for opponent");
-    elm_list_select_mode_set(view.games_list.inactive_list, ELM_OBJECT_SELECT_MODE_NONE);
+    //elm_list_select_mode_set(view.games_list.inactive_list, ELM_OBJECT_SELECT_MODE_NONE);
     GAMES_LIST_ADD(view.games_list.done_list, "Finished games");
-    elm_list_select_mode_set(view.games_list.done_list, ELM_OBJECT_SELECT_MODE_NONE);
+    //elm_list_select_mode_set(view.games_list.done_list, ELM_OBJECT_SELECT_MODE_NONE);
 
-    //evas_object_show(view.toolbar.layout);
     evas_object_show(view.user_ind.layout);
     evas_object_hide(view.games_list.layout);
     return 0;
 }
 
+void qd_view_games_list_clear(void)
+{
+    elm_list_clear(view.games_list.active_list);
+    elm_list_clear(view.games_list.inactive_list);
+    elm_list_clear(view.games_list.done_list);
+}
+
 void qd_view_games_list_play_cb(void *data, Evas_Object *obj, void *ev)
 {
     printf("wanna play?\n");
-    qd_view_game_stat_page_show(data);
+    qd_ctrl_game_details((Qd_Game_Info *) data);
 }
 
-void qd_view_games_list_active_item_add(char *user_name, void *data)
+void qd_view_games_list_active_item_add(Qd_Game_Info *game)
 {
-    elm_list_item_append(view.games_list.active_list, user_name, NULL, NULL, qd_view_games_list_play_cb, data);
+    elm_list_item_append(view.games_list.active_list, game->opponent.name, NULL, NULL, qd_view_games_list_play_cb, (void *) game);
     elm_list_go(view.games_list.active_list);
 }
 
-void qd_view_games_list_inactive_item_add(char *user_name, void *data)
+void qd_view_games_list_inactive_item_add(Qd_Game_Info *game)
 {
-    elm_list_item_append(view.games_list.inactive_list, user_name, NULL, NULL, NULL, data);
+    elm_list_item_append(view.games_list.inactive_list, game->opponent.name, NULL, NULL, NULL, (void *) game);
     elm_list_go(view.games_list.inactive_list);
 }
 
-void qd_view_games_list_done_item_add(char *user_name, void *data)
+void qd_view_games_list_done_item_add(Qd_Game_Info *game)
 {
-    elm_list_item_append(view.games_list.done_list, user_name, NULL, NULL, NULL, data);
+    elm_list_item_append(view.games_list.done_list, game->opponent.name, NULL, NULL, NULL, (void *) game);
     elm_list_go(view.games_list.done_list);
 }

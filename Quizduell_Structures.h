@@ -6,7 +6,6 @@
 #define NO_ROUNDS_PER_GAME 6
 extern int QD_INVALID_VALUE;
 
-// append to list items
 typedef unsigned long Qd_Game_Id;
 typedef unsigned long Qd_User_Id;
 
