@@ -11,6 +11,7 @@
 
 static void _qd_ctrl_data_free(void);
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
+static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 
 Qd_Player *player;
 Eina_List *games; // list of Qd_Game_Info*
@@ -21,6 +22,7 @@ static Eina_Stringshare *_tmp_password = NULL;
 static void _init_event_cbs(void)
 {
     ecore_event_handler_add(QD_CON_USERS_LOGIN, _qd_ctrl_users_login_completed_cb, NULL);
+    ecore_event_handler_add(QD_CON_GAMES_SPECIFIC_GAME_INFO, _qd_ctrl_games_specific_game_info_cb, NULL);
 }
 
 Eina_Bool qd_ctrl_init(void)
@@ -67,7 +69,12 @@ void qd_ctrl_user_login(char *name, char *pw)
 
 void qd_ctrl_game_details(Qd_Game_Info *game)
 {
-   qd_view_game_stat_page_show(game);
+    Eina_Strbuf *url = eina_strbuf_new();
+
+    eina_strbuf_append_printf(url, "games/%li", game->game_id);
+    qd_con_request_with_params(eina_strbuf_string_get(url), NULL, QD_CON_GAMES_SPECIFIC_GAME_INFO, EINA_FALSE);
+
+    eina_strbuf_free(url);
 }
 
 void qd_ctrl_games_list_update(void)
@@ -140,6 +147,24 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
     eina_strbuf_free(bytes);
 
     //qd_view_games_list_page_show();
+    return EINA_TRUE;
+}
+
+static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
+{
+    Eina_Strbuf *bytes = event_info;
+    const char *server_response = eina_strbuf_string_get(bytes);
+    Qd_Game_Info *game = NULL;
+
+    printf("Received specific game info\n");
+    printf("%s\n", eina_strbuf_string_get(bytes));
+
+    game = json_parse_specific_game_info(server_response);
+
+    qd_view_game_stat_page_show(game);
+
+    eina_strbuf_free(bytes);
+
     return EINA_TRUE;
 }
 
