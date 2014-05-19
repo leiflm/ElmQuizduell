@@ -10,7 +10,9 @@ extern int QD_CON_USERS_CREATE;
 extern int QD_CON_USERS_UPDATE;
 extern int QD_CON_USERS_LOGIN;
 extern int QD_CON_USERS_LOGOUT;
-extern int QD_CON_GAME_STATE;
+extern int QD_CON_USERS_CURRENT_GAME_INFO;
+extern int QD_CON_GAMES_SPECIFIC_GAME_INFO;
+extern int QD_CON_GAMES_UPLOAD_ROUND_ANSWERS;
 
 Eina_Bool qd_con_init(void);
 void qd_con_shutdown(void);
