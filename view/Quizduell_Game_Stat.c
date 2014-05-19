@@ -11,7 +11,8 @@ Evas_Object *qd_view_game_stat_ind_add(Evas_Object *parent, Qd_Player *pl)
 
     label = elm_label_add(frame);
     elm_object_part_content_set(frame, "default", label);
-    elm_object_part_text_set(label, "default", pl->name);
+    if (pl)
+        elm_object_part_text_set(label, "default", pl->name);
     evas_object_show(label);
 
 
@@ -33,9 +34,10 @@ Evas_Object *qd_view_game_stat_res_add(Evas_Object *parent)
 
 void qd_view_game_stat_play_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
+    Qd_Game_Info *game = (Qd_Game_Info *) data;
     printf("play\n");
-    //qd_view_category_page_show();
-    qd_view_question_page_show();
+    //qd_view_category_page_show(game);
+    qd_view_question_page_show(game);
 }
 
 void qd_view_game_stat_retire_clicked_cb(void *data, Evas_Object *obj, void *ev)
@@ -73,7 +75,7 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
     evas_object_size_hint_weight_set(pl_btn, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     elm_object_part_text_set(pl_btn, "default", "Play");
     elm_table_pack(layout, pl_btn, 1, NO_ROUNDS_PER_GAME + 2, 1, 1);
-    evas_object_smart_callback_add(pl_btn, "clicked", qd_view_game_stat_play_clicked_cb, NULL);
+    evas_object_smart_callback_add(pl_btn, "clicked", qd_view_game_stat_play_clicked_cb, (void *) game);
     evas_object_show(pl_btn);
 
     // add play button
