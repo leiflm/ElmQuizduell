@@ -91,21 +91,21 @@ void qd_view_game_stat_page_show(Qd_Game_Info *game)
     elm_naviframe_item_push(view.layout, "game against", NULL, NULL, page_layout, NULL);
 }
 
-void qd_view_category_page_show(void)
+void qd_view_category_page_show(Qd_Game_Info *game)
 {
     Evas_Object* page_layout;
     // should get data 
-    page_layout = qd_view_category_page_add(view.win);
+    page_layout = qd_view_category_page_add(view.win, game);
     
     elm_naviframe_item_push(view.layout, "Select a category", NULL, NULL, page_layout, NULL);
 }
 
-void qd_view_question_page_show(void)
+void qd_view_question_page_show(Qd_Game_Info *game)
 {
     Evas_Object* page_layout;
     Elm_Object_Item *it;
     // should get data 
-    page_layout = qd_view_question_page_add(view.win);
+    page_layout = qd_view_question_page_add(view.win, game);
     it = elm_naviframe_item_push(view.layout, "", NULL, NULL, page_layout, NULL);
     elm_naviframe_item_title_enabled_set(it, EINA_FALSE, EINA_FALSE);
 }

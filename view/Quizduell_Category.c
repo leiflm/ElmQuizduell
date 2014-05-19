@@ -2,11 +2,11 @@
 
 void qd_view_category_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
-    qd_view_question_page_show();
+    qd_view_question_page_show((Qd_Game_Info *) data);
     printf("selected: %s\n", elm_object_part_text_get(obj, "default"));
 }
 
-Evas_Object *qd_view_category_page_add(Evas_Object *parent)
+Evas_Object *qd_view_category_page_add(Evas_Object *parent, Qd_Game_Info *game)
 {
     Evas_Object *layout, *frame, *btn1, *btn2, *btn3;
 
@@ -23,9 +23,9 @@ Evas_Object *qd_view_category_page_add(Evas_Object *parent)
     evas_object_smart_callback_add(_btn, "clicked", _cb_func, _data); \
     elm_box_pack_end(layout, _btn)
 
-    ADD_BUTTON_TO_WITH(btn1, qd_view_category_clicked_cb, NULL, "t1");
-    ADD_BUTTON_TO_WITH(btn2, qd_view_category_clicked_cb, NULL, "t2");
-    ADD_BUTTON_TO_WITH(btn3, qd_view_category_clicked_cb, NULL, "t3");
+    ADD_BUTTON_TO_WITH(btn1, qd_view_category_clicked_cb, game, "t1");
+    ADD_BUTTON_TO_WITH(btn2, qd_view_category_clicked_cb, game, "t2");
+    ADD_BUTTON_TO_WITH(btn3, qd_view_category_clicked_cb, game, "t3");
     
     evas_object_show(layout);
 

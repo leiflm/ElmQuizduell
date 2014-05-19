@@ -9,6 +9,7 @@ typedef struct
     Evas_Object *frame;
     Evas_Object *flip;
     Ecore_Timer *timer;
+    Qd_Game_Info *game;
     int no;
 } Qd_Question_Elem;
 
@@ -122,8 +123,7 @@ void qd_view_question_reveal_clicked_cb(void *data, Evas_Object* obj, void *ev)
     qqe->timer = ecore_animator_add(_animator_cb, qqe);
 }
 
-//Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Question_Info_Set *qqt)
-Evas_Object *qd_view_question_page_add(Evas_Object *parent)
+Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game)
 {
     Evas_Object* layout;
     Evas_Object* front_label;
@@ -136,7 +136,6 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent)
 
     evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-
 
     qqe->frame = elm_frame_add(layout);
     front_label = elm_image_add(layout);
