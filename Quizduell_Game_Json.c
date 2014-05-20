@@ -29,6 +29,16 @@ static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj)
     tmp = json_object_object_get(jobj, "state");
     game_info->state = json_object_get_int(tmp);
 
+    tmp = json_object_object_get(jobj, "you_gave_up");
+    if (tmp)
+    {
+        game_info->you_gave_up = json_object_get_boolean(tmp);
+    }
+    else
+    {
+        game_info->you_gave_up = EINA_FALSE;
+    }
+
     tmp = json_object_object_get(jobj, "elapsed_min");
     game_info->elapsed_min = json_object_get_int(tmp);
 

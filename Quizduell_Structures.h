@@ -82,6 +82,7 @@ typedef struct
     Qd_Question* questions[NO_ROUNDS_PER_GAME][NO_CAT_CHOICES][NO_QUESTIONS_PER_ROUND];
     int rating_bonus;
     Qd_Game_State state;
+    Eina_Bool you_gave_up;
     int your_answers[NO_ROUNDS_PER_GAME][NO_QUESTIONS_PER_ROUND];
     Eina_Bool your_turn;
     unsigned int round;
