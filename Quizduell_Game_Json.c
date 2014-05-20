@@ -9,7 +9,7 @@ static Qd_Player *_json_parse_player(json_object *jobj);
 
 static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj)
 {
-    Qd_Game_Info *game_info = malloc(sizeof(Qd_Game_Info));
+    Qd_Game_Info *game_info = calloc(1, sizeof(Qd_Game_Info));
     json_object *tmp = NULL, *o = NULL;
     array_list *arr = NULL;
     int i = 0;
