@@ -1,5 +1,15 @@
 #include "Quizduell_View_Private.h"
 
+typedef struct
+{
+    Qd_Question *quest;
+    int *your_answer;
+    int *opponent_answer;
+    Eina_Stringshare *opp_name;
+    Evas_Object *parent;
+} Qd_Question_Full;
+
+
 Evas_Object *qd_view_game_stat_ind_add(Evas_Object *parent, Qd_Player *pl)
 {
     Evas_Object *label, *frame;
@@ -8,27 +18,127 @@ Evas_Object *qd_view_game_stat_ind_add(Evas_Object *parent, Qd_Player *pl)
     evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
     evas_object_show(frame);
 
-
     label = elm_label_add(frame);
     elm_object_part_content_set(frame, "default", label);
     if (pl)
         elm_object_part_text_set(label, "default", pl->name);
     evas_object_show(label);
 
-
     return frame;
-
 }
 
-Evas_Object *qd_view_game_stat_res_add(Evas_Object *parent)
+static void _qd_view_game_stat_question_popup_ok_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
-    Evas_Object *lb;
-    lb = elm_label_add(parent);
-    elm_object_part_text_set(lb, "default", "text");
-    evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_size_hint_align_set(lb, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_show(lb);
-    return lb;
+    Evas_Object *p = (Evas_Object *) data;
+    evas_object_hide(p);
+    evas_object_del(p);
+}
+static void _qd_view_game_stat_icon_clicked_cb(void *data, Evas_Object *obj, void *ev)
+{
+    Qd_Question_Full *qf = (Qd_Question_Full *) data;
+    Evas_Object *popup, *btn;
+#define LEN 1024
+    char textbuf[LEN];
+    int cur = 0;
+    Eina_Stringshare *ans[4];
+    ans[0] = qf->quest->correct;
+    ans[1] = qf->quest->wrong[0];
+    ans[2] = qf->quest->wrong[1];
+    ans[3] = qf->quest->wrong[2];
+
+    popup = elm_popup_add(qf->parent);
+
+    //cur = snprintf(textbuf, LEN, "Category: %s<br>", qf->quest->cat_name);
+    elm_object_part_text_set(popup, "title,text", qf->quest->cat_name);
+    cur += snprintf(textbuf + cur, LEN - cur, "Your answer: %s<br>", ans[*qf->your_answer]);
+
+    if (*(qf->opponent_answer) != QD_INVALID_VALUE)
+        cur += snprintf(textbuf + cur, LEN - cur, "Opponent answer: %s<br>", ans[*qf->opponent_answer]);
+    else
+        cur += snprintf(textbuf + cur, LEN - cur, "Opponent answer:<br>");
+
+    cur += snprintf(textbuf + cur, LEN - cur, "Correct answer: %s<br>", ans[0]);
+    elm_object_part_text_set(popup, "default", textbuf);
+    btn = elm_button_add(popup);
+    elm_object_part_content_set(popup, "button1", btn);
+    elm_object_part_text_set(btn, "default", "OK");
+    evas_object_smart_callback_add(btn, "clicked", _qd_view_game_stat_question_popup_ok_clicked_cb, popup);
+
+    evas_object_show(popup);
+#undef LEN
+}
+
+static void _qd_view_game_stat_info_free_cb(void *data, Evas *e, Evas_Object* obj, void *ev)
+{
+    free(data);
+}
+
+Evas_Object *qd_view_game_stat_res_add(Evas_Object *parent, int ans[3], Qd_Game_Info *game, int round)
+{
+    Evas_Object *box, *ic;
+    int i, cat_choice;
+    Qd_Question_Full *qf;
+    box = elm_box_add(parent);
+    elm_box_horizontal_set(box, EINA_TRUE);
+    EXPAND_AND_FILL(box);
+    cat_choice = game->cat_choices[round];
+
+
+    for (i = 0; i < 3; i++)
+    {
+        ic = elm_icon_add(box);
+        if (ans[i] != QD_INVALID_VALUE)
+        {
+            if (ans[i] == 0)
+            {
+                elm_icon_standard_set(ic, "info");
+            }
+            else
+            {
+                elm_icon_standard_set(ic, "error");
+            }
+            if (cat_choice != QD_INVALID_VALUE)
+            {
+                qf = calloc(1, sizeof(Qd_Question_Full));
+                qf->quest = game->questions[round][cat_choice][i];
+                qf->your_answer = &game->your_answers[round][i];
+                qf->opponent_answer = &game->opponent_answers[round][i];
+                qf->parent = parent;
+                evas_object_smart_callback_add(ic, "clicked", _qd_view_game_stat_icon_clicked_cb, (void *) qf);
+                evas_object_event_callback_add(ic, EVAS_CALLBACK_DEL, _qd_view_game_stat_info_free_cb, qf);
+            }
+        }
+        EXPAND_AND_FILL(ic);
+        evas_object_show(ic);
+        elm_box_pack_end(box, ic);
+    }
+
+
+    evas_object_show(box);
+    return box;
+}
+
+Evas_Object * qd_view_game_stat_cat_add(Evas_Object *parent, const char *cat_name, int round)
+{
+    Evas_Object *layout, *lb_r, *lb_c;
+    char r[32];
+    snprintf(r, 31, "<b>Round %i</b>", round);
+
+    layout = elm_box_add(parent);
+    lb_r = elm_label_add(layout);
+    elm_object_part_text_set(lb_r, "default", r);
+    evas_object_show(lb_r);
+    EXPAND_AND_FILL(lb_r);
+    elm_box_pack_end(layout, lb_r);
+    lb_c = elm_label_add(layout);
+    elm_object_part_text_set(lb_c, "default", cat_name);
+    evas_object_show(lb_c);
+    EXPAND_AND_FILL(lb_c);
+    elm_box_pack_end(layout, lb_c);
+
+    evas_object_show(layout);
+
+    return layout;
 }
 
 
@@ -47,7 +157,7 @@ void qd_view_game_stat_retire_clicked_cb(void *data, Evas_Object *obj, void *ev)
 
 Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
 {
-    Evas_Object *layout, *user_ind, *opp_ind, *game_res, *retire_btn, *pl_btn;
+    Evas_Object *layout, *user_ind, *opp_ind, *game_res, *game_cat, *retire_btn, *pl_btn;
     int i;
     layout = elm_table_add(parent);
 
@@ -62,9 +172,18 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
 
     for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
     {
-        game_res = qd_view_game_stat_res_add(layout);
+        game_res = qd_view_game_stat_res_add(layout, game->your_answers[i], game, i);
+        EXPAND_AND_FILL(game_res);
         elm_table_pack(layout, game_res, 0, (i+1), 1, 1);
-        game_res = qd_view_game_stat_res_add(layout);
+        if (game->cat_choices[i] != QD_INVALID_VALUE)
+            game_cat = qd_view_game_stat_cat_add(layout, game->questions[i][game->cat_choices[i]][0]->cat_name, i);
+        else
+            game_cat = qd_view_game_stat_cat_add(layout, NULL, i);
+
+        EXPAND_AND_FILL(game_cat);
+        elm_table_pack(layout, game_cat, 1, (i+1), 1, 1);
+        game_res = qd_view_game_stat_res_add(layout, game->opponent_answers[i], game, i);
+        EXPAND_AND_FILL(game_res);
         elm_table_pack(layout, game_res, 2, (i+1), 1, 1);
         
     }

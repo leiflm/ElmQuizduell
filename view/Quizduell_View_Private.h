@@ -12,6 +12,10 @@
 #include "Quizduell_Controller.h"
 #include "Quizduell_Structures.h"
 
+#define EXPAND_AND_FILL(_ev_obj_) \
+        evas_object_size_hint_weight_set(_ev_obj_, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND); \
+        evas_object_size_hint_align_set(_ev_obj_, EVAS_HINT_FILL, EVAS_HINT_FILL)
+
 typedef struct
 {
     Evas_Object *win;

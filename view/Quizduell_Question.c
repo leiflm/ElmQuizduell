@@ -100,11 +100,20 @@ void qd_view_question_answer_clicked_cb(void *data, Evas_Object* obj, void *ev)
 void qd_view_question_questions_text_set(Qd_Question_Elem *qqe)
 {
     int i;
+    Qd_Question *q;
+    Eina_Stringshare *ans[4];
 
-    elm_object_part_text_set(qqe->question, "default", "question");
+    q = qqe->game->questions[qqe->game->round][qqe->game->cat_choices[qqe->game->round]][qqe->no];
+
+    ans[0] = q->correct;
+    ans[1] = q->wrong[0];
+    ans[2] = q->wrong[1];
+    ans[3] = q->wrong[2];
+    elm_object_part_text_set(qqe->frame, "default", q->cat_name);
+    elm_object_part_text_set(qqe->question, "default", q->question);
     for (i = 0; i < 4; i++)
     {
-        elm_object_part_text_set(qqe->btns[i], "default", "answer");
+        elm_object_part_text_set(qqe->btns[i], "default", ans[i]);
         evas_object_smart_callback_add(qqe->btns[i], "clicked", qd_view_question_answer_clicked_cb, qqe);
     }
     elm_progressbar_value_set(qqe->bar, 1.0);
@@ -129,7 +138,7 @@ void qd_view_question_reveal_clicked_cb(void *data, Evas_Object* obj, void *ev)
 Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game)
 {
     Evas_Object* layout;
-    Evas_Object* front_label;
+    Evas_Object* cat_icon;
     Qd_Question_Elem *qqe;
     qqe = malloc(sizeof(Qd_Question_Elem));
     qqe->no = 0;
@@ -142,8 +151,9 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game)
     evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
     qqe->frame = elm_frame_add(layout);
-    front_label = elm_image_add(layout);
-    elm_image_file_set(front_label, "/tmp/undo.svg", NULL);
+    cat_icon = elm_icon_add(layout);
+    elm_icon_standard_set(cat_icon, "dialog-question");
+    evas_object_show(cat_icon);
 
     qqe->question = elm_label_add(qqe->frame);
 
@@ -153,15 +163,15 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game)
     evas_object_size_hint_weight_set(qqe->frame, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_show(qqe->frame);
 
-    evas_object_smart_callback_add(front_label, "clicked", qd_view_question_reveal_clicked_cb, qqe);
-    evas_object_show(front_label);
+    evas_object_smart_callback_add(cat_icon, "clicked", qd_view_question_reveal_clicked_cb, qqe);
+    evas_object_show(cat_icon);
 
     // add a flip for the question, activated after
     qqe->flip = elm_flip_add(layout);
 
     evas_object_size_hint_align_set(qqe->flip, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_size_hint_weight_set(qqe->flip, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    elm_object_part_content_set(qqe->flip, "front", front_label);
+    elm_object_part_content_set(qqe->flip, "front", cat_icon);
     elm_object_part_content_set(qqe->flip, "back", qqe->frame);
     evas_object_show(qqe->flip);
 
@@ -186,7 +196,6 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game)
     evas_object_size_hint_weight_set(qqe->bar, EVAS_HINT_EXPAND, 0.0);
 
     elm_table_pack(layout, qqe->bar, 0, 3, 2, 1);
-    elm_object_part_text_set(qqe->frame, "default", "category");
 
     return layout;
 }
