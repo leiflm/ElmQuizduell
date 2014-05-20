@@ -45,9 +45,12 @@ void qd_game_info_free(Qd_Game_Info *game)
 
     for (int i = 0; i < NO_ROUNDS_PER_GAME; ++i)
     {
-        for (int j = 0; j < NO_QUESTIONS_PER_CATEGORY; ++j)
+        for (int j = 0; j < NO_CAT_CHOICES; ++j)
         {
-            qd_question_free(game->questions[i][j]);
+            for (int k = 0; k < NO_QUESTIONS_PER_ROUND; ++k)
+            {
+                qd_question_free(game->questions[i][j][k]);
+            }
         }
     }
 }
