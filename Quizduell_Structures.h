@@ -47,7 +47,8 @@ typedef enum
 {
     QD_GAME_STATE_NONE = 0,
     QD_GAME_STATE_PLAYING,
-    QD_GAME_STATE_FINISHED
+    QD_GAME_STATE_FINISHED,
+    QD_GAME_STATE_GIVEN_UP = 5
 } Qd_Game_State;
 
 typedef struct
@@ -75,6 +76,7 @@ typedef struct
     Qd_Category cat_choices[NO_ROUNDS_PER_GAME];
     int elapsed_min;
     Qd_Game_Id game_id;
+    Qd_User_Id give_up_player_id;
     Eina_List *messages;
     Qd_Player *opponent;
     int opponent_answers[NO_ROUNDS_PER_GAME][NO_QUESTIONS_PER_ROUND];
@@ -85,6 +87,8 @@ typedef struct
     Eina_Bool your_turn;
     unsigned int round;
 } Qd_Game_Info;
+
+const Qd_User_Id QD_USER_ID_UNDEFINED = 0;
 
 void qd_message_free(Qd_Message *m);
 void qd_player_free(Qd_Player *p);

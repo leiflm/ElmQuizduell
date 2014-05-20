@@ -41,6 +41,16 @@ static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj)
     tmp = json_object_object_get(jobj, "game_id");
     game_info->game_id = json_object_get_int64(tmp);
 
+    tmp = json_object_object_get(jobj, "give_up_player_id");
+    if (tmp)
+    {
+        game_info->give_up_player_id = json_object_get_int64(tmp);
+    }
+    else
+    {
+        game_info->give_up_player_id = QD_USER_ID_UNDEFINED;
+    }
+
 
     tmp = json_object_object_get(jobj, "cat_choices"); // array of ints
     for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp), o = NULL; 
