@@ -76,7 +76,13 @@ void qd_ctrl_game_details(Qd_Game_Info *game)
 
     eina_strbuf_free(url);
 }
+/*
+void qd_ctrl_game_details(Qd_Game_Info *game)
+{
+    qd_view_game_stat_page_show(game);
+}
 
+*/
 void qd_ctrl_games_list_update(void)
 {
     Eina_List *l;
@@ -102,11 +108,44 @@ void qd_ctrl_games_list_update(void)
 
 Qd_Game_Info *qd_view_test_make_game(void)
 {
+   int i,j,k;
    Qd_Game_Info *game = calloc(1, sizeof(Qd_Game_Info));
    game->opponent = calloc(1, sizeof(Qd_Player));
-   game->opponent->name = "Test Player";
+   game->opponent->name = eina_stringshare_add("Test Player");
    game->state = QD_GAME_STATE_PLAYING;
    game->your_turn = EINA_TRUE;
+   for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
+   {
+        for (j = 0; j < NO_CAT_CHOICES; j++)
+        {
+             game->opponent_answers[i][j] = QD_INVALID_VALUE;
+             game->your_answers[i][j] = QD_INVALID_VALUE;
+             for (k = 0; k < NO_QUESTIONS_PER_ROUND; k++)
+             {
+                 game->questions[i][j][k] = calloc(1, sizeof(Qd_Question));
+             }
+        }
+        game->cat_choices[i] = QD_INVALID_VALUE;
+   }
+   game->cat_choices[0] = 0;
+   game->questions[0][0][0]->cat_name = eina_stringshare_add("Wunder der Technik");
+   game->questions[0][0][0]->correct = eina_stringshare_add("Google");
+   game->questions[0][0][0]->wrong[0] = eina_stringshare_add("MS");
+   game->questions[0][0][0]->wrong[1] = eina_stringshare_add("Apple");
+   game->questions[0][0][0]->wrong[2] = eina_stringshare_add("Amazon");
+   game->questions[0][0][0]->question = eina_stringshare_add("What the search?");
+   game->questions[0][0][1]->cat_name = eina_stringshare_add("Wunder der Technik");
+   game->questions[0][0][1]->correct = eina_stringshare_add("Not Google");
+   game->questions[0][0][1]->wrong[0] = eina_stringshare_add("MS");
+   game->questions[0][0][1]->wrong[1] = eina_stringshare_add("ebuy");
+   game->questions[0][0][1]->wrong[2] = eina_stringshare_add("Amazon");
+   game->questions[0][0][1]->question = eina_stringshare_add("What the buy?");
+   game->opponent_answers[0][0] = 0;
+   game->opponent_answers[0][1] = 1;
+   game->opponent_answers[0][2] = 0;
+   game->your_answers[0][0] = 0;
+   game->your_answers[0][1] = 3;
+   game->your_answers[0][2] = 2;
    return game;
 }
 
