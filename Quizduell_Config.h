@@ -6,6 +6,7 @@
 typedef struct _Quizduell_Country_Specific_Config {
     const char *encrypted_hmac_key; // apk_decompilation/res/values/strings.xml:android_handy_id
     const char *encrypted_base_url; // apk_decompilation/res/values/strings.xml:android_twiggly_id
+    const char *user_agent;
 } Quizduell_Country_Specific_Config;
 
 typedef struct _Quizduell_Config {
@@ -13,6 +14,7 @@ typedef struct _Quizduell_Config {
     char *decrypted_base_url;
     Eina_Stringshare *username;
     Eina_Stringshare *password;
+    Eina_Stringshare *user_agent;
 } Quizduell_Config;
 
 extern Quizduell_Config qd_config;
