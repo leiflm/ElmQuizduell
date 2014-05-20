@@ -172,7 +172,7 @@ Qd_Game_Info *json_parse_specific_game_info(const char *json)
 {
     json_object *user = NULL, *tmp = NULL;
     array_list *arr = NULL;
-    int i = 0, no_questions = 0, rnd = 0;
+    int i = 0, no_questions = 0, rnd = 0, cat_choice = 0;
     Qd_Game_Info *game = NULL;
     json_object *jobj = NULL;
 
@@ -193,10 +193,14 @@ Qd_Game_Info *json_parse_specific_game_info(const char *json)
     arr = json_object_get_array(tmp);
     for (rnd = 0; rnd < NO_ROUNDS_PER_GAME; rnd++)
     {
-        for (i = rnd; i < no_questions; i += NO_QUESTIONS_PER_CATEGORY)
+        for (cat_choice = 0; cat_choice < NO_CAT_CHOICES; cat_choice++)
         {
-            json_object *o = json_object_array_get_idx(tmp, i);
-            game->questions[rnd][i] = _json_parse_question(o);
+            for (i = 0; i < NO_QUESTIONS_PER_ROUND; i++)
+            {
+                unsigned int idx = (rnd * NO_CAT_CHOICES * NO_QUESTIONS_PER_ROUND) + (cat_choice * NO_QUESTIONS_PER_ROUND) + i;
+                json_object *o = json_object_array_get_idx(tmp, idx);
+                game->questions[rnd][cat_choice][i] = _json_parse_question(o);
+            }
         }
     }
 

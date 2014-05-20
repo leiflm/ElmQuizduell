@@ -4,7 +4,8 @@
 #include <Eina.h>
 
 #define NO_ROUNDS_PER_GAME 6
-#define NO_QUESTIONS_PER_CATEGORY 3
+#define NO_CAT_CHOICES 3
+#define NO_QUESTIONS_PER_ROUND 3
 extern int QD_INVALID_VALUE;
 
 typedef unsigned long Qd_Game_Id;
@@ -76,12 +77,13 @@ typedef struct
     Qd_Game_Id game_id;
     Eina_List *messages;
     Qd_Player *opponent;
-    int opponent_answers[NO_ROUNDS_PER_GAME][3];
-    Qd_Question* questions[NO_ROUNDS_PER_GAME][NO_QUESTIONS_PER_CATEGORY];
+    int opponent_answers[NO_ROUNDS_PER_GAME][NO_QUESTIONS_PER_ROUND];
+    Qd_Question* questions[NO_ROUNDS_PER_GAME][NO_CAT_CHOICES][NO_QUESTIONS_PER_ROUND];
     int rating_bonus;
     Qd_Game_State state;
-    int your_answers[NO_ROUNDS_PER_GAME][3];
+    int your_answers[NO_ROUNDS_PER_GAME][NO_QUESTIONS_PER_ROUND];
     Eina_Bool your_turn;
+    unsigned int round;
 } Qd_Game_Info;
 
 void qd_message_free(Qd_Message *m);
