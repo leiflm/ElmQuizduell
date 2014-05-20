@@ -6,7 +6,6 @@
 #define NO_ROUNDS_PER_GAME 6
 #define NO_CAT_CHOICES 3
 #define NO_QUESTIONS_PER_ROUND 3
-extern int QD_INVALID_VALUE;
 
 typedef unsigned long Qd_Game_Id;
 typedef unsigned long Qd_User_Id;
@@ -88,7 +87,8 @@ typedef struct
     unsigned int round;
 } Qd_Game_Info;
 
-const Qd_User_Id QD_USER_ID_UNDEFINED = 0;
+extern const int QD_INVALID_VALUE;
+extern const Qd_User_Id QD_USER_ID_UNDEFINED;
 
 void qd_message_free(Qd_Message *m);
 void qd_player_free(Qd_Player *p);

@@ -1,7 +1,8 @@
 #include <Eina.h>
 #include "Quizduell_Structures.h"
 
-int QD_INVALID_VALUE = -1;
+const int QD_INVALID_VALUE = -1;
+const Qd_User_Id QD_USER_ID_UNDEFINED = 0;
 
 void qd_message_free(Qd_Message *m) {
     eina_stringshare_del(m->text);
