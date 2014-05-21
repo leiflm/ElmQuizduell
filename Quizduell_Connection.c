@@ -17,6 +17,7 @@ struct _Qd_Con_Request
 typedef struct _Qd_Con_Request Qd_Con_Request;
 
 static const char URL_REQUEST_CONTENT_TYPE[] = "application/x-www-form-urlencoded";
+static const char COOKIE_JAR_FILE[] = "/tmp/qd_cookies.txt";
 
 static Eina_Bool _qd_con_url_request_data_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_con_url_request_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
@@ -147,6 +148,11 @@ Eina_Bool qd_con_request_with_params(const char *api_url, const Eina_Hash *param
     if (!(url_con = ecore_con_url_new(qd_config.decrypted_base_url)))
         return EINA_FALSE;
 
+    // use cookie magic for authorization
+    ecore_con_url_cookies_init(url_con); // not sure whether this is necessary, since we don't use the same connection in subsequent calls
+    ecore_con_url_cookies_file_add(url_con, COOKIE_JAR_FILE);
+    ecore_con_url_cookies_jar_file_set(url_con, COOKIE_JAR_FILE);
+
     //FIXME: Disable debugging
     ecore_con_url_verbose_set(url_con, EINA_TRUE);
 
@@ -227,6 +233,7 @@ static Eina_Bool _qd_con_url_request_completed_cb(void *data EINA_UNUSED, int ty
     Ecore_Con_Event_Url_Complete *url_complete = event_info;
     Qd_Con_Request *rqst = ecore_con_url_data_get(url_complete->url_con);
     ecore_event_add(rqst->type, rqst->buffer, _qd_con_request_free_cb, rqst);
+    ecore_con_url_cookies_jar_write(url_complete->url_con);
     ecore_con_url_free(url_complete->url_con);
 
     return EINA_TRUE;
