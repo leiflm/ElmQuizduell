@@ -26,7 +26,7 @@ static void qd_view_games_list_new_game_clicked_cb(void *data, Evas_Object *obj,
 
 int qd_view_games_list_page_add(void)
 {
-    Evas_Object *frame, *scroller, *box;
+    Evas_Object *frame, *scroller, *box, *ic;
 
     view.games_list.layout = elm_box_add(view.win);
     evas_object_size_hint_align_set(view.games_list.layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -56,6 +56,9 @@ int qd_view_games_list_page_add(void)
 
     // add preferences button
     view.games_list.pref_btn = elm_button_add(view.games_list.layout);
+    ic = elm_icon_add(view.games_list.layout);
+    elm_icon_standard_set(ic, "preferences-system");
+    elm_object_part_content_set(view.games_list.pref_btn, "icon", ic);
     elm_object_part_text_set(view.games_list.pref_btn, "default", "Pref.");
     evas_object_size_hint_weight_set(view.games_list.pref_btn, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(view.games_list.pref_btn, EVAS_HINT_FILL, 0.0);
@@ -63,6 +66,9 @@ int qd_view_games_list_page_add(void)
 
     // add reload button
     view.games_list.reload_btn = elm_button_add(view.games_list.layout);
+    ic = elm_icon_add(view.games_list.layout);
+    elm_icon_standard_set(ic, "view-refresh");
+    elm_object_part_content_set(view.games_list.reload_btn, "icon", ic);
     elm_object_part_text_set(view.games_list.reload_btn, "default", "reload");
     evas_object_size_hint_weight_set(view.games_list.reload_btn, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(view.games_list.reload_btn, EVAS_HINT_FILL, 0.0);
