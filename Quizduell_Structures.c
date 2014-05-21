@@ -38,6 +38,11 @@ void qd_game_info_free(Qd_Game_Info *game)
 {
     Qd_Message *m;
 
+    if (!game)
+    {
+        return;
+    }
+
     EINA_LIST_FREE(game->messages, m)
     {
         qd_message_free(m);
@@ -54,6 +59,8 @@ void qd_game_info_free(Qd_Game_Info *game)
             }
         }
     }
+
+    free(game);
 }
 
 void qd_server_message_free(Qd_Server_Message *msg)
