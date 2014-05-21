@@ -87,25 +87,37 @@ Evas_Object *qd_view_game_stat_res_add(Evas_Object *parent, int ans[3], Qd_Game_
     for (i = 0; i < 3; i++)
     {
         ic = elm_icon_add(box);
-        if (ans[i] != QD_INVALID_VALUE)
+        // did opponent play this round, but we didn't?
+        if ((game->your_answers[round][i] == QD_INVALID_VALUE) &&
+                (game->opponent_answers[round][i] != QD_INVALID_VALUE) &&
+                (ans == game->opponent_answers[round]))
         {
-            if (ans[i] == 0)
+            elm_icon_standard_set(ic, "dialog-question");
+            game->round = round;
+        }
+        else
+        {
+            // there is no valid answer for this round
+            if (ans[i] != QD_INVALID_VALUE)
             {
-                elm_icon_standard_set(ic, "info");
-            }
-            else
-            {
-                elm_icon_standard_set(ic, "error");
-            }
-            if (cat_choice != QD_INVALID_VALUE)
-            {
-                qf = calloc(1, sizeof(Qd_Question_Full));
-                qf->quest = game->questions[round][cat_choice][i];
-                qf->your_answer = &game->your_answers[round][i];
-                qf->opponent_answer = &game->opponent_answers[round][i];
-                qf->parent = parent;
-                evas_object_smart_callback_add(ic, "clicked", _qd_view_game_stat_icon_clicked_cb, (void *) qf);
-                evas_object_event_callback_add(ic, EVAS_CALLBACK_DEL, _qd_view_game_stat_info_free_cb, qf);
+                if (ans[i] == 0)
+                {
+                    elm_icon_standard_set(ic, "info");
+                }
+                else
+                {
+                    elm_icon_standard_set(ic, "error");
+                }
+                if (cat_choice != QD_INVALID_VALUE)
+                {
+                    qf = calloc(1, sizeof(Qd_Question_Full));
+                    qf->quest = game->questions[round][cat_choice][i];
+                    qf->your_answer = &game->your_answers[round][i];
+                    qf->opponent_answer = &game->opponent_answers[round][i];
+                    qf->parent = parent;
+                    evas_object_smart_callback_add(ic, "clicked", _qd_view_game_stat_icon_clicked_cb, (void *) qf);
+                    evas_object_event_callback_add(ic, EVAS_CALLBACK_DEL, _qd_view_game_stat_info_free_cb, qf);
+                }
             }
         }
         EXPAND_AND_FILL(ic);
