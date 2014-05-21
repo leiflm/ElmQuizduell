@@ -50,6 +50,7 @@ static void _qd_view_game_stat_icon_clicked_cb(void *data, Evas_Object *obj, voi
 
     //cur = snprintf(textbuf, LEN, "Category: %s<br>", qf->quest->cat_name);
     elm_object_part_text_set(popup, "title,text", qf->quest->cat_name);
+    cur += snprintf(textbuf + cur, LEN - cur, "<b>%s</b><br>", qf->quest->question);
     cur += snprintf(textbuf + cur, LEN - cur, "Your answer: %s<br>", ans[*qf->your_answer]);
 
     if (*(qf->opponent_answer) != QD_INVALID_VALUE)
