@@ -208,6 +208,18 @@ Qd_Game_Info *json_parse_specific_game_info(const char *json)
         return NULL;
     }
 
+    if ((tmp = json_object_object_get(jobj, "access")))
+    {
+        Eina_Bool access = json_object_get_boolean(tmp);
+        if (!access)
+        {
+            // this means that either our cookie is dead or we didn't send one at all
+            return NULL;
+        }
+    }
+
+    game = _json_parse_game_info_game(tmp);
+
     if (!(tmp = json_object_object_get(jobj, "game")))
     {
         return NULL;

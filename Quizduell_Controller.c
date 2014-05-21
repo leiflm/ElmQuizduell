@@ -211,7 +211,14 @@ static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, in
 
     game = json_parse_specific_game_info(server_response);
 
-    qd_view_game_stat_page_show(game);
+    if (game)
+    {
+        qd_view_game_stat_page_show(game);
+    }
+    else
+    {
+        qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
+    }
 
     eina_strbuf_free(bytes);
 
