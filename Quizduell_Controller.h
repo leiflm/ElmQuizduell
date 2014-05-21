@@ -21,6 +21,9 @@ void qd_ctrl_game_new_random_player(void);
 // search for player
 void qd_ctrl_game_player_search(char *name);
 
+// round finished and updated answers in game struct, now send
+void qd_ctrl_answers_send(Qd_Game_Info *game);
+
 // update view lists
 void qd_ctrl_games_list_update(void);
 

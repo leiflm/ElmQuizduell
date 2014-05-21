@@ -106,6 +106,11 @@ void qd_ctrl_games_list_update(void)
     }
 }
 
+void qd_ctrl_answers_send(Qd_Game_Info *game)
+{
+    printf("Sending answers for game %lu\n", game->game_id);
+}
+
 Qd_Game_Info *qd_view_test_make_game(void)
 {
    int i,j,k;
