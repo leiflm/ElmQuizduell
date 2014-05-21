@@ -77,7 +77,7 @@ typedef struct
 
 typedef struct
 {
-    Qd_Category cat_choices[NO_ROUNDS_PER_GAME];
+    int cat_choices[NO_ROUNDS_PER_GAME];
     int elapsed_min;
     Qd_Game_Id game_id;
     Qd_User_Id give_up_player_id;
