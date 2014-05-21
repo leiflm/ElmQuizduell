@@ -137,12 +137,19 @@ Eina_Bool json_parse_current_game_info(const char *json)
         return EINA_FALSE;
     }
     qd_player_free(player);
+    player = NULL;
     if (!(player = _json_parse_player(user)))
     {
         return EINA_FALSE;
     }
 
     // parse games
+    EINA_LIST_FREE(games, game)
+    {
+        qd_game_info_free(game);
+    }
+    games = NULL;
+
     tmp = json_object_object_get(user, "games"); // array of ints
     for (arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp); i < no_games; i++)
     {

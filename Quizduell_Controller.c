@@ -13,8 +13,8 @@ static void _qd_ctrl_data_free(void);
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 
-Qd_Player *player;
-Eina_List *games; // list of Qd_Game_Info*
+Qd_Player *player = NULL;
+Eina_List *games = NULL; // list of Qd_Game_Info*
 
 static Eina_Stringshare *_tmp_username = NULL;
 static Eina_Stringshare *_tmp_password = NULL;
