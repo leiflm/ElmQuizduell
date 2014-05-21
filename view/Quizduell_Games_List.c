@@ -124,12 +124,12 @@ void qd_view_games_list_active_item_add(Qd_Game_Info *game)
 
 void qd_view_games_list_inactive_item_add(Qd_Game_Info *game)
 {
-    elm_list_item_append(view.games_list.inactive_list, game->opponent->name, NULL, NULL, NULL, (void *) game);
+    elm_list_item_append(view.games_list.inactive_list, game->opponent->name, NULL, NULL, qd_view_games_list_play_cb, (void *) game);
     elm_list_go(view.games_list.inactive_list);
 }
 
 void qd_view_games_list_done_item_add(Qd_Game_Info *game)
 {
-    elm_list_item_append(view.games_list.done_list, game->opponent->name, NULL, NULL, NULL, (void *) game);
+    elm_list_item_append(view.games_list.done_list, game->opponent->name, NULL, NULL, qd_view_games_list_play_cb, (void *) game);
     elm_list_go(view.games_list.done_list);
 }
