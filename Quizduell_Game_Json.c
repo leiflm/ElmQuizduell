@@ -172,7 +172,7 @@ Qd_Question *_json_parse_question(json_object *jobj)
     json_object *tmp = NULL;
 
     #define GET_VAL(val) \
-        if (!(tmp = json_object_object_get(tmp, val))) \
+        if (!(tmp = json_object_object_get(jobj, val))) \
             return NULL
         GET_VAL("cat_id");
         q->cat_id = json_object_get_int(tmp);
