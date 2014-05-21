@@ -55,3 +55,20 @@ void qd_game_info_free(Qd_Game_Info *game)
         }
     }
 }
+
+void qd_server_message_free(Qd_Server_Message *msg)
+{
+    if (!msg)
+        return;
+    if (msg->title)
+    {
+        eina_stringshare_del(msg->title);
+        msg->title = NULL;
+    }
+    if (msg->msg)
+    {
+        eina_stringshare_del(msg->msg);
+        msg->msg = NULL;
+    }
+    free (msg);
+}

@@ -233,3 +233,31 @@ Qd_Game_Info *json_parse_specific_game_info(const char *json)
 
     return game;
 }
+
+Qd_Server_Message *json_parse_server_message(const char *json)
+{
+    Qd_Server_Message *msg = calloc(1, sizeof(Qd_Server_Message));
+    json_object *tmp = NULL;
+    json_object *jobj = NULL;
+
+    if (!(jobj = json_tokener_parse(json)))
+    {
+        goto _failed;
+    }
+
+    #define GET_VAL(val) \
+        if (!(tmp = json_object_object_get(jobj, val))) \
+            goto _failed;
+
+        GET_VAL("popup_title");
+        msg->title = eina_stringshare_add(json_object_get_string(tmp));
+        GET_VAL("popup_mess");
+        msg->msg = eina_stringshare_add(json_object_get_string(tmp));
+    #undef GET_VAL
+
+    return msg;
+
+_failed:
+    free(msg);
+    return NULL;
+}

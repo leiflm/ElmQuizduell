@@ -11,6 +11,11 @@ typedef unsigned long Qd_Game_Id;
 typedef unsigned long Qd_User_Id;
 typedef unsigned long Qd_Question_Id;
 
+typedef struct {
+    Eina_Stringshare *title;
+    Eina_Stringshare *msg;
+} Qd_Server_Message;
+
 typedef enum
 {
     QD_CATEGORY_WUNDER_DER_TECHNIK = 1,
@@ -91,6 +96,7 @@ typedef struct
 extern const int QD_INVALID_VALUE;
 extern const Qd_User_Id QD_USER_ID_UNDEFINED;
 
+void qd_server_message_free(Qd_Server_Message *msg);
 void qd_message_free(Qd_Message *m);
 void qd_player_free(Qd_Player *p);
 void qd_game_info_free(Qd_Game_Info *game);

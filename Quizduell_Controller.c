@@ -177,15 +177,26 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
     printf("Login completed\n");
     printf("%s\n", eina_strbuf_string_get(bytes));
 
-    json_parse_login(server_response);
+    if (!json_parse_login(server_response))
+    {
+        Qd_Server_Message *msg = json_parse_server_message(server_response);
+
+        if (msg)
+        {
+            qd_view_info_message_show(msg->title, msg->msg);
+            qd_server_message_free(msg);
+        }
+        else
+        {
+            qd_view_info_message_show("Ooops", "Login failed!");
+        }
+        return EINA_TRUE;
+    }
 
     // on login set new name
     // FIXME: use stringshare all over the place!
     qd_view_user_name_set(strdup(_tmp_username));
 
-    eina_strbuf_free(bytes);
-
-    //qd_view_games_list_page_show();
     return EINA_TRUE;
 }
 

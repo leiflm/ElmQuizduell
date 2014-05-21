@@ -39,7 +39,9 @@ static Qd_Con_Request *_qd_con_request_new(int type)
 
 static void _qd_con_request_free_cb(void *user_data, void *func_data)
 {
-    free(func_data);
+    Qd_Con_Request *rqst = user_data;
+    eina_strbuf_free(rqst->buffer), rqst->buffer = NULL;
+    free(rqst);
 }
 
 static void _init_events(void)
