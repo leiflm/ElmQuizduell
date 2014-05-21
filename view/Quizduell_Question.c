@@ -57,8 +57,18 @@ void qd_view_question_next_clicked_cb(void *data, Evas *e, Evas_Object *obj, voi
     if (qqe->no == 3)
     {
         // send answers to ctrl
-        // qd_ctrl_question_answers();
-        elm_naviframe_item_pop(view.layout);
+        qd_ctrl_answers_send(qqe->game);
+        // cheeck if next turn
+        if (qqe->game->opponent_answers[qqe->game->round][0] == QD_INVALID_VALUE)
+        {
+            qqe->game->your_turn = EINA_FALSE;
+        }
+        else
+        {
+            qqe->game->round++;
+        }
+        qd_view_games_list_page_show();
+        qd_view_game_stat_page_show(qqe->game);
         return;
     }
     // hide question

@@ -158,9 +158,15 @@ Evas_Object * qd_view_game_stat_cat_add(Evas_Object *parent, const char *cat_nam
 void qd_view_game_stat_play_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
     Qd_Game_Info *game = (Qd_Game_Info *) data;
-    printf("play\n");
-    //qd_view_category_page_show(game);
-    qd_view_question_page_show(game);
+    printf("play round %i \n", game->round);
+    if (game->your_turn && (game->opponent_answers[game->round][0] == QD_INVALID_VALUE))
+    {
+        qd_view_category_page_show(game);
+    }
+    else
+    {
+        qd_view_question_page_show(game);
+    }
 }
 
 void qd_view_game_stat_retire_clicked_cb(void *data, Evas_Object *obj, void *ev)
@@ -168,6 +174,17 @@ void qd_view_game_stat_retire_clicked_cb(void *data, Evas_Object *obj, void *ev)
     printf("cant retire\n");
 }
 
+void qd_view_game_stat_calc_round(Qd_Game_Info *game)
+{
+    int i;
+    for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
+    {
+        if ((game->your_answers[i][0] == QD_INVALID_VALUE) ||
+            (game->opponent_answers[i][0] == QD_INVALID_VALUE))
+            break;
+    }
+    game->round = i;
+}
 Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
 {
     Evas_Object *layout, *user_ind, *opp_ind, *game_res, *game_cat, *retire_btn, *pl_btn;
@@ -200,6 +217,8 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
         elm_table_pack(layout, game_res, 2, (i+1), 1, 1);
         
     }
+    
+    qd_view_game_stat_calc_round(game);
 
     // add play button
     pl_btn = elm_button_add(layout);
@@ -208,6 +227,8 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
     elm_object_part_text_set(pl_btn, "default", "Play");
     elm_table_pack(layout, pl_btn, 1, NO_ROUNDS_PER_GAME + 2, 1, 1);
     evas_object_smart_callback_add(pl_btn, "clicked", qd_view_game_stat_play_clicked_cb, (void *) game);
+    if (!game->your_turn)
+        elm_object_disabled_set(pl_btn, EINA_TRUE);
     evas_object_show(pl_btn);
 
     // add play button
