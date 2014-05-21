@@ -9,6 +9,32 @@ typedef struct
     Evas_Object *parent;
 } Qd_Question_Full;
 
+Evas_Object *qd_view_game_stat_points_ind_add(Evas_Object *parent, Qd_Game_Info *game)
+{
+    Evas_Object *layout;
+    char buf[32];
+    int i,j, yp = 0, op = 0;
+
+    layout = elm_label_add(parent);
+
+    for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
+    {
+        for (j = 0; j < NO_QUESTIONS_PER_ROUND; j++)
+        {
+            if (game->your_answers[i][j] == 0)
+                yp++;
+            if ((game->your_answers[i][j] != QD_INVALID_VALUE) &&
+                    (game->opponent_answers[i][j] == 0))
+                op++;
+        }
+    }
+    snprintf(buf, 31, "<style font_size=30><b>%i - %i</b>", yp, op);
+    elm_object_part_text_set(layout, "default", buf);
+    EXPAND_AND_FILL(layout);
+    evas_object_show(layout);
+
+    return layout;
+}
 
 Evas_Object *qd_view_game_stat_ind_add(Evas_Object *parent, Qd_Player *pl)
 {
@@ -187,17 +213,19 @@ void qd_view_game_stat_calc_round(Qd_Game_Info *game)
 }
 Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
 {
-    Evas_Object *layout, *user_ind, *opp_ind, *game_res, *game_cat, *retire_btn, *pl_btn;
+    Evas_Object *layout, *user_ind, *points, *opp_ind, *game_res, *game_cat, *retire_btn, *pl_btn;
     int i;
     layout = elm_table_add(parent);
 
     user_ind = qd_view_game_stat_ind_add(layout, player);
-    evas_object_size_hint_weight_set(user_ind, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_size_hint_align_set(user_ind, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    EXPAND_AND_FILL(user_ind);
     elm_table_pack(layout, user_ind, 0, 0, 1, 1);
+
+    points = qd_view_game_stat_points_ind_add(layout, game);
+    elm_table_pack(layout, points, 1, 0, 1, 1);
+
     opp_ind = qd_view_game_stat_ind_add(layout, game->opponent);
-    evas_object_size_hint_weight_set(opp_ind, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_size_hint_align_set(opp_ind, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    EXPAND_AND_FILL(opp_ind);
     elm_table_pack(layout, opp_ind, 2, 0, 1, 1);
 
     for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
