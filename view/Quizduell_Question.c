@@ -16,6 +16,7 @@ typedef struct
 void qd_view_question_answer_clicked_cb(void *data, Evas_Object* obj, void *ev);
 void qd_view_question_next_clicked_cb(void *data, Evas *e, Evas_Object *obj, void *ev);
 void qd_view_question_questions_text_set(Qd_Question_Elem *qqe);
+void qd_view_question_button_random_repack(Evas_Object *btns[4]);
 
 void qd_view_question_question_finished(Qd_Question_Elem *qqe)
 {
@@ -78,8 +79,8 @@ void qd_view_question_page_del_cb(void *data, Evas *e, Evas_Object *obj, void *e
 
 void qd_view_question_answer_clicked_cb(void *data, Evas_Object* obj, void *ev)
 {
-    Qd_Question_Elem *qqe = (Qd_Question_Elem *) data;
     int i, ans;
+    Qd_Question_Elem *qqe = (Qd_Question_Elem *) data;
     // check which was clicked
     for (i = 0; i < 4; i++)
     {
@@ -87,14 +88,19 @@ void qd_view_question_answer_clicked_cb(void *data, Evas_Object* obj, void *ev)
             ans = i;
     }
     ecore_animator_del(qqe->timer);
-    qd_view_question_question_finished(qqe);
 
-    printf("answer %i\n", ans);
+    printf("answer %i, question %i\n", ans, qqe->no);
     // check answer here or ...
     if (ans == 0)
         evas_object_color_set(obj, 0, 255, 0, 255);
     else
         evas_object_color_set(obj, 255, 0, 0, 255);
+
+    qqe->game->your_answers[qqe->game->round][qqe->no] = ans;
+
+    // show corrent answer
+    evas_object_color_set(qqe->btns[0], 0, 255, 0, 255);
+    qd_view_question_question_finished(qqe);
 }
 
 void qd_view_question_questions_text_set(Qd_Question_Elem *qqe)
@@ -126,6 +132,7 @@ void qd_view_question_reveal_clicked_cb(void *data, Evas_Object* obj, void *ev)
     int i;
     // set text content of objects/questions/answers
     qd_view_question_questions_text_set(qqe);
+    qd_view_question_button_random_repack(qqe->btns);
     elm_flip_go(qqe->flip, ELM_FLIP_ROTATE_Y_CENTER_AXIS);
     for (i = 0; i < 4; i++)
     {
@@ -200,4 +207,16 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game)
     return layout;
 }
 
+void qd_view_question_button_random_repack(Evas_Object *btns[4])
+{
+    int rand_x = 0, rand_y = 0;
+
+    rand_x = rand() % 2;
+    rand_y = rand() % 2;
+
+    elm_table_pack_set(btns[0], rand_x, rand_y + 1, 1, 1);
+    elm_table_pack_set(btns[1], rand_x, abs(rand_y - 1) + 1, 1, 1);
+    elm_table_pack_set(btns[2], abs(rand_x - 1), rand_y + 1, 1, 1);
+    elm_table_pack_set(btns[3], abs(rand_x - 1), abs(rand_y - 1) + 1, 1, 1);
+}
 
