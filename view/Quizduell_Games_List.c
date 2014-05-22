@@ -47,6 +47,9 @@ int qd_view_games_list_page_add(void)
 
     // add start new game button
     view.games_list.new_btn = elm_button_add(view.games_list.layout);
+    ic = elm_icon_add(view.games_list.layout);
+    elm_icon_standard_set(ic, "add");
+    elm_object_part_content_set(view.games_list.new_btn, "icon", ic);
     elm_object_part_text_set(view.games_list.new_btn, "default", "Start a new game");
     evas_object_size_hint_weight_set(view.games_list.new_btn, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(view.games_list.new_btn, EVAS_HINT_FILL, 0.0);

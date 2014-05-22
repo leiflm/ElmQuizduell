@@ -67,8 +67,8 @@ void qd_view_question_next_clicked_cb(void *data, Evas *e, Evas_Object *obj, voi
         {
             qqe->game->round++;
         }
-        qd_view_games_list_page_show();
-        qd_view_game_stat_page_show(qqe->game);
+        qd_view_game_stat_page_refresh_and_pop_to(qqe->game);
+
         return;
     }
     // hide question

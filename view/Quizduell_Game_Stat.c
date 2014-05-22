@@ -272,3 +272,16 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
 
     return layout;
 }
+
+void qd_view_game_stat_page_refresh_and_pop_to(Qd_Game_Info *game)
+{
+    Evas_Object* layout;
+    Eina_List *items;
+    Elm_Object_Item *it;
+    layout = qd_view_game_stat_page_add(view.layout, game);
+    items = elm_naviframe_items_get(view.layout);
+
+    it = eina_list_nth(items, 1);
+    elm_object_item_part_content_set(it, "default", layout);
+    elm_naviframe_item_pop_to(it);
+}

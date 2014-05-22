@@ -87,5 +87,6 @@ int qd_view_games_list_page_add(void);
 int qd_view_new_game_page_add(void);
 int qd_view_preferences_page_add(void);
 void qd_view_category_page_show(Qd_Game_Info *game);
+void qd_view_game_stat_page_refresh_and_pop_to(Qd_Game_Info *game);
 
 #endif
