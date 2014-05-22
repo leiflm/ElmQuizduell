@@ -62,7 +62,7 @@ void qd_ctrl_user_login(char *name, char *pw)
     Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
     eina_hash_add(hash, "name", eina_stringshare_add(_tmp_username));
     eina_hash_add(hash, "pwd", eina_stringshare_add(_password_hash));
-    qd_con_request_with_params("users/login", hash, QD_CON_USERS_LOGIN, EINA_TRUE);
+    qd_con_request_with_params(NULL, "users/login", hash, QD_CON_USERS_LOGIN, EINA_TRUE);
     eina_hash_free(hash);
     hash = NULL;
     free(_password_hash);
@@ -74,7 +74,7 @@ void qd_ctrl_game_details(Qd_Game_Info *game)
     Eina_Strbuf *url = eina_strbuf_new();
 
     eina_strbuf_append_printf(url, "games/%li", game->game_id);
-    qd_con_request_with_params(eina_strbuf_string_get(url), NULL, QD_CON_GAMES_SPECIFIC_GAME_INFO, EINA_FALSE);
+    qd_con_request_with_params(game, eina_strbuf_string_get(url), NULL, QD_CON_GAMES_SPECIFIC_GAME_INFO, EINA_FALSE);
 
     eina_strbuf_free(url);
 }
@@ -150,7 +150,7 @@ void qd_ctrl_answers_send(Qd_Game_Info *game)
     eina_hash_add(hash, "game_id", eina_stringshare_add(eina_strbuf_string_get(strbuf)));
     eina_strbuf_free(strbuf);
 
-    qd_con_request_with_params("games/upload_round_answers", hash, QD_CON_GAMES_UPLOAD_ROUND_ANSWERS, EINA_TRUE);
+    qd_con_request_with_params(game, "games/upload_round_answers", hash, QD_CON_GAMES_UPLOAD_ROUND_ANSWERS, EINA_TRUE);
     eina_hash_free(hash);
     hash = NULL;
 }
@@ -251,16 +251,14 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
 
 static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
 {
-    Eina_Strbuf *bytes = event_info;
-    const char *server_response = eina_strbuf_string_get(bytes);
-    Qd_Game_Info *game = NULL;
+    Qd_Con_Request* rqst = event_info;
+    const char *server_response = eina_strbuf_string_get(rqst->buffer);
+    Qd_Game_Info *game = (Qd_Game_Info*)rqst->game_info;
 
     printf("Received specific game info\n");
-    printf("%s\n", eina_strbuf_string_get(bytes));
+    printf("%s\n", eina_strbuf_string_get(rqst->buffer));
 
-    game = json_parse_specific_game_info(server_response);
-
-    if (game)
+    if (json_parse_specific_game_info(game, server_response))
     {
         qd_view_game_stat_page_show(game);
     }
@@ -268,8 +266,6 @@ static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, in
     {
         qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
     }
-
-    eina_strbuf_free(bytes);
 
     return EINA_TRUE;
 }

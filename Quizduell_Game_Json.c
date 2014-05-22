@@ -4,16 +4,25 @@
 #include "Quizduell_Controller.h"
 #include "Quizduell_Structures.h"
 
-static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj);
+static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_object *jobj);
 static Qd_Player *_json_parse_player(json_object *jobj);
 
-static Qd_Game_Info *_json_parse_game_info_game(json_object *jobj)
+static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_object *jobj)
 {
-    Qd_Game_Info *game_info = calloc(1, sizeof(Qd_Game_Info));
+    Qd_Game_Info *game_info = NULL;
     json_object *tmp = NULL, *o = NULL;
     array_list *arr = NULL;
     int i = 0;
     int no_games = 0;
+
+    if (_game_info)
+    {
+        game_info = _game_info;
+    }
+    else
+    {
+        game_info = calloc(1, sizeof(Qd_Game_Info));
+    }
 
     tmp = json_object_object_get(jobj, "your_answers"); // array of ints
     for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp);
@@ -154,7 +163,7 @@ Eina_Bool json_parse_current_game_info(const char *json)
     for (arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp); i < no_games; i++)
     {
         json_object *o = json_object_array_get_idx(tmp, i);
-        game = _json_parse_game_info_game(o);
+        game = _json_parse_game_info_game(NULL, o);
         games = eina_list_append(games, game);
     }
 
@@ -195,17 +204,16 @@ Qd_Question *_json_parse_question(json_object *jobj)
     return q;
 }
 
-Qd_Game_Info *json_parse_specific_game_info(const char *json)
+Eina_Bool json_parse_specific_game_info(Qd_Game_Info *game, const char *json)
 {
     json_object *jobj = NULL;
     json_object *game_obj, *tmp = NULL;
     array_list *arr = NULL;
     int i = 0, no_questions = 0, rnd = 0, cat_choice = 0;
-    Qd_Game_Info *game = NULL;
 
     if (!(jobj = json_tokener_parse(json)))
     {
-        return NULL;
+        return EINA_FALSE;
     }
 
     if ((tmp = json_object_object_get(jobj, "access")))
@@ -214,15 +222,15 @@ Qd_Game_Info *json_parse_specific_game_info(const char *json)
         if (!access)
         {
             // this means that either our cookie is dead or we didn't send one at all
-            return NULL;
+            return EINA_FALSE;
         }
     }
 
     if (!(game_obj = json_object_object_get(jobj, "game")))
     {
-        return NULL;
+        return EINA_FALSE;
     }
-    game = _json_parse_game_info_game(game_obj);
+    game = _json_parse_game_info_game(game, game_obj);
 
     // parse questions
     tmp = json_object_object_get(game_obj, "questions"); // array of questions
@@ -241,7 +249,7 @@ Qd_Game_Info *json_parse_specific_game_info(const char *json)
         }
     }
 
-    return game;
+    return EINA_TRUE;
 }
 
 Qd_Server_Message *json_parse_server_message(const char *json)

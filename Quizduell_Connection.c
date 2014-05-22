@@ -7,14 +7,8 @@
 #include <Ecore_Con.h>
 #include "Quizduell_Config.h"
 #include "Quizduell_Crypto.h"
+#include "Quizduell_Structures.h"
 #include "Quizduell_Connection.h"
-
-struct _Qd_Con_Request
-{
-    Eina_Strbuf *buffer;
-    int type;
-};
-typedef struct _Qd_Con_Request Qd_Con_Request;
 
 static const char URL_REQUEST_CONTENT_TYPE[] = "application/x-www-form-urlencoded";
 static const char COOKIE_JAR_FILE[] = "/tmp/qd_cookies.txt";
@@ -27,14 +21,17 @@ int QD_CON_USERS_UPDATE = 0;
 int QD_CON_USERS_LOGIN = 0;
 int QD_CON_USERS_LOGOUT = 0;
 int QD_CON_USERS_CURRENT_GAME_INFO = 0;
+int QD_CON_GAMES_CREATE_GAME = 0;
 int QD_CON_GAMES_SPECIFIC_GAME_INFO = 0;
 int QD_CON_GAMES_UPLOAD_ROUND_ANSWERS = 0;
 
-static Qd_Con_Request *_qd_con_request_new(int type)
+static Qd_Con_Request *_qd_con_request_new(int type, const Qd_Game_Info *game_info)
 {
     Qd_Con_Request *rqst = malloc(sizeof(Qd_Con_Request));
     rqst->type = type;
     rqst->buffer = eina_strbuf_new();
+    rqst->game_info = game_info;
+
     return rqst;
 }
 
@@ -53,6 +50,7 @@ static void _init_events(void)
         EV_INIT(QD_CON_USERS_LOGIN);
         EV_INIT(QD_CON_USERS_LOGOUT);
         EV_INIT(QD_CON_USERS_CURRENT_GAME_INFO);
+        EV_INIT(QD_CON_GAMES_CREATE_GAME);
         EV_INIT(QD_CON_GAMES_SPECIFIC_GAME_INFO);
         EV_INIT(QD_CON_GAMES_UPLOAD_ROUND_ANSWERS);
     #undef EV_INIT
@@ -135,7 +133,7 @@ static Eina_Stringshare *_create_hmac_with_params(const Eina_Strbuf *url_buf, co
     return eina_stringshare_add(hmac);
 }
 
-Eina_Bool qd_con_request_with_params(const char *api_url, const Eina_Hash *params_hashlist, int type, Eina_Bool use_post)
+Eina_Bool qd_con_request_with_params(const Qd_Game_Info *game_info, const char *api_url, const Eina_Hash *params_hashlist, int type, Eina_Bool use_post)
 {
     Ecore_Con_Url *url_con = NULL;
     Eina_Strbuf *url_buf = eina_strbuf_new();
@@ -189,7 +187,7 @@ Eina_Bool qd_con_request_with_params(const char *api_url, const Eina_Hash *param
     ecore_con_url_additional_header_add(url_con, "clientdate", date_str);
 
     // use type in callback to select actual callback
-    rqst = _qd_con_request_new(type);
+    rqst = _qd_con_request_new(type, game_info);
     ecore_con_url_data_set(url_con, rqst);
 
     if (use_post)
