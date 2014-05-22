@@ -12,6 +12,7 @@
 static void _qd_ctrl_data_free(void);
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
+static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 
 Qd_Player *player = NULL;
 Eina_List *games = NULL; // list of Qd_Game_Info*
@@ -23,6 +24,7 @@ static void _init_event_cbs(void)
 {
     ecore_event_handler_add(QD_CON_USERS_LOGIN, _qd_ctrl_users_login_completed_cb, NULL);
     ecore_event_handler_add(QD_CON_GAMES_SPECIFIC_GAME_INFO, _qd_ctrl_games_specific_game_info_cb, NULL);
+    ecore_event_handler_add(QD_CON_GAMES_SPECIFIC_GAME_INFO, _qd_ctrl_games_upload_round_answers_completed_cb, NULL);
 }
 
 Eina_Bool qd_ctrl_init(void)
@@ -108,7 +110,49 @@ void qd_ctrl_games_list_update(void)
 
 void qd_ctrl_answers_send(Qd_Game_Info *game)
 {
+    char buf[256];
+    unsigned int category = QD_INVALID_VALUE;
+    Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
+    Eina_Strbuf *strbuf = eina_strbuf_new();
+
     printf("Sending answers for game %lu\n", game->game_id);
+
+    for (int i = 0; i < NO_ROUNDS_PER_GAME; i++)
+    {
+        if (game->cat_choices[i] == QD_INVALID_VALUE)
+        {
+            break;
+        }
+        category = game->cat_choices[i];
+    }
+    snprintf(buf, sizeof(buf), "%i", category);
+    eina_hash_add(hash, "cat_choice", eina_stringshare_add(buf));
+
+    snprintf(buf, sizeof(buf), "%lu", game->game_id);
+    eina_hash_add(hash, "game_id", eina_stringshare_add(buf));
+
+    for (int i = 0; i < NO_ROUNDS_PER_GAME; i++)
+    {
+        for (int j = 0; j < NO_QUESTIONS_PER_ROUND; j++)
+        {
+            if (game->cat_choices[i] == QD_INVALID_VALUE)
+            {
+                break;
+            }
+            if ((i > 0) || (j > 0))
+            {
+                eina_strbuf_append(strbuf, ",");
+            }
+            eina_strbuf_append_printf(strbuf, "%i", game->your_answers[i][j]);
+        }
+    }
+    eina_strbuf_append(strbuf, "]");
+    eina_hash_add(hash, "game_id", eina_stringshare_add(eina_strbuf_string_get(strbuf)));
+    eina_strbuf_free(strbuf);
+
+    qd_con_request_with_params("games/upload_round_answers", hash, QD_CON_GAMES_UPLOAD_ROUND_ANSWERS, EINA_TRUE);
+    eina_hash_free(hash);
+    hash = NULL;
 }
 
 Qd_Game_Info *qd_view_test_make_game(void)
@@ -226,6 +270,31 @@ static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, in
     }
 
     eina_strbuf_free(bytes);
+
+    return EINA_TRUE;
+}
+
+static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
+{
+    // Eina_Strbuf *bytes = event_info;
+    // const char *server_response = eina_strbuf_string_get(bytes);
+    // Qd_Game_Info *game = NULL;
+
+    printf("Values were uploaded!\n");
+    // printf("%s\n", eina_strbuf_string_get(bytes));
+
+    // game = json_parse_specific_game_info(server_response);
+
+    // if (game)
+    // {
+    //     qd_view_game_stat_page_show(game);
+    // }
+    // else
+    // {
+    //     qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
+    // }
+
+    // eina_strbuf_free(bytes);
 
     return EINA_TRUE;
 }
