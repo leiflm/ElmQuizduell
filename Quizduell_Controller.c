@@ -12,6 +12,7 @@
 static void _qd_ctrl_data_free(void);
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_users_current_user_games_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
+static Eina_Bool _qd_ctrl_games_create_game_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
@@ -27,6 +28,7 @@ static void _init_event_cbs(void)
 {
     ecore_event_handler_add(QD_CON_USERS_LOGIN, _qd_ctrl_users_login_completed_cb, NULL);
     ecore_event_handler_add(QD_CON_USERS_CURRENT_USER_GAMES, _qd_ctrl_users_current_user_games_completed_cb, NULL);
+    ecore_event_handler_add(QD_CON_GAMES_CREATE_GAME, _qd_ctrl_games_create_game_completed_cb, NULL);
     ecore_event_handler_add(QD_CON_GAMES_SPECIFIC_GAME_INFO, _qd_ctrl_games_specific_game_info_cb, NULL);
     ecore_event_handler_add(QD_CON_GAMES_UPLOAD_ROUND_ANSWERS, _qd_ctrl_games_upload_round_answers_completed_cb, NULL);
     ecore_event_handler_add(QD_CON_USERS_FIND_USER, _qd_ctrl_users_find_user_completed_cb, NULL);
@@ -77,6 +79,19 @@ void qd_ctrl_user_login(char *name, char *pw)
 void qd_ctrl_users_current_user_games(void)
 {
     qd_con_request_with_params(NULL, "users/current_user_games", NULL, QD_CON_USERS_CURRENT_USER_GAMES, EINA_TRUE);
+}
+
+void qd_ctrl_games_game_create(const Qd_User_Id uid)
+{
+    Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
+    char buf[64];
+
+    snprintf(buf, sizeof(buf), "%lu", uid);
+
+    eina_hash_add(hash, "friend_id", eina_stringshare_add(buf));
+    qd_con_request_with_params(NULL, "games/create_game", hash, QD_CON_GAMES_CREATE_GAME, EINA_TRUE);
+
+    eina_hash_free(hash);
 }
 
 void qd_ctrl_game_details(Qd_Game_Info *game)
@@ -304,6 +319,27 @@ static Eina_Bool _qd_ctrl_users_current_user_games_completed_cb(void *data EINA_
         {
             qd_view_info_message_show("Ooops", "Fechting current_user_games failed!");
         }
+    }
+
+    return EINA_TRUE;
+}
+
+static Eina_Bool _qd_ctrl_games_create_game_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
+{
+    Qd_Con_Request* rqst = event_info;
+    const char *server_response = eina_strbuf_string_get(rqst->buffer);
+    Qd_Game_Info *game = (Qd_Game_Info*)rqst->game_info;
+
+    printf("Received specific game info\n");
+    printf("%s\n", server_response);
+
+    if (json_parse_specific_game_info(game, server_response))
+    {
+        qd_view_game_stat_page_show(game);
+    }
+    else
+    {
+        qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
     }
 
     return EINA_TRUE;
