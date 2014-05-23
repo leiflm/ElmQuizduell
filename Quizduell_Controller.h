@@ -21,9 +21,6 @@ void qd_ctrl_users_add_friend(Qd_User_Id uid);
 // Reload the user state (games and settings)
 void qd_ctrl_users_current_user_games(void);
 
-// reload if there are new pending games active
-void qd_ctrl_games_list_reload(void);
-
 // start a new game against a random player
 void qd_ctrl_game_new_random_player(void);
 
