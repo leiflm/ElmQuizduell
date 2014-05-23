@@ -24,6 +24,9 @@ void qd_ctrl_users_current_user_games(void);
 // start a new game against a specific player
 void qd_ctrl_games_create_game(const Qd_User_Id uid);
 
+// give up a game
+void qd_ctrl_games_give_up(Qd_Game_Info *game_info);
+
 // start a new game against a random player
 void qd_ctrl_game_new_random_player(void);
 

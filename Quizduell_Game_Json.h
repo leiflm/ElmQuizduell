@@ -3,6 +3,7 @@
 
 #include "Quizduell_Structures.h"
 
+Qd_Game_Info *json_parse_game_info_game(Qd_Game_Info *_game_info, const char *json);
 Eina_Bool json_parse_current_game_info(const char *json);
 Eina_Bool json_parse_specific_game_info(Qd_Game_Info *game_info, const char *json);
 Eina_Bool json_parse_login(const char *json);

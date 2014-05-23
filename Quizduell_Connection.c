@@ -26,6 +26,7 @@ int QD_CON_USERS_ADD_FRIEND = 0;
 int QD_CON_GAMES_CREATE_GAME = 0;
 int QD_CON_GAMES_SPECIFIC_GAME_INFO = 0;
 int QD_CON_GAMES_UPLOAD_ROUND_ANSWERS = 0;
+int QD_CON_GAMES_GIVE_UP = 0;
 
 static Qd_Con_Request *_qd_con_request_new(int type, const Qd_Game_Info *game_info)
 {
@@ -57,6 +58,7 @@ static void _init_events(void)
         EV_INIT(QD_CON_GAMES_CREATE_GAME);
         EV_INIT(QD_CON_GAMES_SPECIFIC_GAME_INFO);
         EV_INIT(QD_CON_GAMES_UPLOAD_ROUND_ANSWERS);
+        EV_INIT(QD_CON_GAMES_GIVE_UP);
     #undef EV_INIT
 }
 

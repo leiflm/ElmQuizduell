@@ -23,6 +23,7 @@ extern int QD_CON_USERS_ADD_FRIEND;
 extern int QD_CON_GAMES_CREATE_GAME;
 extern int QD_CON_GAMES_SPECIFIC_GAME_INFO;
 extern int QD_CON_GAMES_UPLOAD_ROUND_ANSWERS;
+extern int QD_CON_GAMES_GIVE_UP;
 
 Eina_Bool qd_con_init(void);
 void qd_con_shutdown(void);

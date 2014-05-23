@@ -127,6 +127,18 @@ static Qd_Player *_json_parse_player(json_object *jobj)
     return p;
 }
 
+Qd_Game_Info *json_parse_game_info_game(Qd_Game_Info *_game_info, const char *json)
+{
+    json_object *jobj = NULL;
+
+    if (!(jobj = json_tokener_parse(json)))
+    {
+        return NULL;
+    }
+
+    return _json_parse_game_info_game(_game_info, jobj);
+}
+
 Eina_Bool json_parse_current_game_info(const char *json)
 {
     json_object *user = NULL, *tmp = NULL;
