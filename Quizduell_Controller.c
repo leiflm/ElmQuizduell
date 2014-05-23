@@ -254,11 +254,11 @@ void qd_ctrl_users_add_friend(Qd_User_Id uid)
 
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
 {
-    Eina_Strbuf *bytes = event_info;
-    const char *server_response = eina_strbuf_string_get(bytes);
+    Qd_Con_Request *rqst = event_info;
+    const char *server_response = eina_strbuf_string_get(rqst->buffer);
 
     printf("Login completed\n");
-    printf("%s\n", eina_strbuf_string_get(bytes));
+    printf("%s\n", server_response);
 
     if (!json_parse_login(server_response))
     {

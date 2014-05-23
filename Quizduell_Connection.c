@@ -235,7 +235,7 @@ static Eina_Bool _qd_con_url_request_completed_cb(void *data EINA_UNUSED, int ty
 {
     Ecore_Con_Event_Url_Complete *url_complete = event_info;
     Qd_Con_Request *rqst = ecore_con_url_data_get(url_complete->url_con);
-    ecore_event_add(rqst->type, rqst->buffer, _qd_con_request_free_cb, rqst);
+    ecore_event_add(rqst->type, rqst, _qd_con_request_free_cb, rqst);
     ecore_con_url_cookies_jar_write(url_complete->url_con);
     ecore_con_url_free(url_complete->url_con);
 
