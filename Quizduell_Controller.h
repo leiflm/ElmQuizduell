@@ -18,6 +18,9 @@ void qd_ctrl_users_find_user(Eina_Stringshare *username);
 // Add friend by her q_id
 void qd_ctrl_users_add_friend(Qd_User_Id uid);
 
+// Reload the user state (games and settings)
+void qd_ctrl_users_current_user_games(void);
+
 // reload if there are new pending games active
 void qd_ctrl_games_list_reload(void);
 

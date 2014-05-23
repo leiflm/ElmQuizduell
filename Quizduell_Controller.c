@@ -11,6 +11,7 @@
 
 static void _qd_ctrl_data_free(void);
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
+static Eina_Bool _qd_ctrl_users_current_user_games_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
@@ -25,6 +26,7 @@ static Eina_Stringshare *_tmp_password = NULL;
 static void _init_event_cbs(void)
 {
     ecore_event_handler_add(QD_CON_USERS_LOGIN, _qd_ctrl_users_login_completed_cb, NULL);
+    ecore_event_handler_add(QD_CON_USERS_CURRENT_USER_GAMES, _qd_ctrl_users_current_user_games_completed_cb, NULL);
     ecore_event_handler_add(QD_CON_GAMES_SPECIFIC_GAME_INFO, _qd_ctrl_games_specific_game_info_cb, NULL);
     ecore_event_handler_add(QD_CON_GAMES_UPLOAD_ROUND_ANSWERS, _qd_ctrl_games_upload_round_answers_completed_cb, NULL);
     ecore_event_handler_add(QD_CON_USERS_FIND_USER, _qd_ctrl_users_find_user_completed_cb, NULL);
@@ -72,6 +74,10 @@ void qd_ctrl_user_login(char *name, char *pw)
     free(_password_hash);
 }
 
+void qd_ctrl_users_current_user_games(void)
+{
+    qd_con_request_with_params(NULL, "users/current_user_games", NULL, QD_CON_USERS_CURRENT_USER_GAMES, EINA_TRUE);
+}
 
 void qd_ctrl_game_details(Qd_Game_Info *game)
 {
@@ -273,6 +279,32 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
     // on login set new name
     // FIXME: use stringshare all over the place!
     qd_view_user_name_set(strdup(_tmp_username));
+
+    return EINA_TRUE;
+}
+
+static Eina_Bool _qd_ctrl_users_current_user_games_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
+{
+    Qd_Con_Request *rqst = event_info;
+    const char *server_response = eina_strbuf_string_get(rqst->buffer);
+
+    printf("Fetched current_user_games completed\n");
+    printf("%s\n", server_response);
+
+    if (!json_parse_current_game_info(server_response))
+    {
+        Qd_Server_Message *msg = json_parse_server_message(server_response);
+
+        if (msg)
+        {
+            qd_view_info_message_show(msg->title, msg->msg);
+            qd_server_message_free(msg);
+        }
+        else
+        {
+            qd_view_info_message_show("Ooops", "Fechting current_user_games failed!");
+        }
+    }
 
     return EINA_TRUE;
 }
