@@ -14,6 +14,7 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
 static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
+static Eina_Bool _qd_ctrl_users_add_friend_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 
 Qd_Player *player = NULL;
 Eina_List *games = NULL; // list of Qd_Game_Info*
@@ -27,6 +28,7 @@ static void _init_event_cbs(void)
     ecore_event_handler_add(QD_CON_GAMES_SPECIFIC_GAME_INFO, _qd_ctrl_games_specific_game_info_cb, NULL);
     ecore_event_handler_add(QD_CON_GAMES_UPLOAD_ROUND_ANSWERS, _qd_ctrl_games_upload_round_answers_completed_cb, NULL);
     ecore_event_handler_add(QD_CON_USERS_FIND_USER, _qd_ctrl_users_find_user_completed_cb, NULL);
+    ecore_event_handler_add(QD_CON_USERS_ADD_FRIEND, _qd_ctrl_users_add_friend_completed_cb, NULL);
 }
 
 Eina_Bool qd_ctrl_init(void)
@@ -219,6 +221,19 @@ void qd_ctrl_users_find_user(Eina_Stringshare *username)
     eina_hash_free(hash);
 }
 
+void qd_ctrl_users_add_friend(Qd_User_Id uid)
+{
+    Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
+    char buf[64];
+
+    snprintf(buf, sizeof(buf), "%lu", uid);
+
+    eina_hash_add(hash, "friend_id", eina_stringshare_add(buf));
+
+    qd_con_request_with_params(NULL, "users/add_friend", hash, QD_CON_USERS_ADD_FRIEND, EINA_TRUE);
+    eina_hash_free(hash);
+}
+
 // static void _qd_ctrl_user_login_success()
 // {
 //     qd_config.username = _tmp_username;
@@ -326,6 +341,25 @@ static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, i
     }
 
     eina_strbuf_free(rqst->buffer);
+
+    return EINA_TRUE;
+}
+
+static Eina_Bool _qd_ctrl_users_add_friend_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
+{
+    Qd_Con_Request* rqst = event_info;
+    const char *server_response = eina_strbuf_string_get(rqst->buffer);
+    Qd_Server_Message *msg = json_parse_server_message(server_response);
+
+    if (msg)
+    {
+        qd_view_info_message_show(msg->title, msg->msg);
+        qd_server_message_free(msg);
+    }
+    else
+    {
+        printf("Could not add friend!\n");
+    }
 
     return EINA_TRUE;
 }

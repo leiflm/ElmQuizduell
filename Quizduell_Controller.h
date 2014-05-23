@@ -15,6 +15,9 @@ void qd_ctrl_user_login(char *name, char* pw);
 // find user online by string
 void qd_ctrl_users_find_user(Eina_Stringshare *username);
 
+// Add friend by her q_id
+void qd_ctrl_users_add_friend(Qd_User_Id uid);
+
 // reload if there are new pending games active
 void qd_ctrl_games_list_reload(void);
 
