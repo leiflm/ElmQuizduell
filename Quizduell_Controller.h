@@ -12,14 +12,14 @@ void qd_ctrl_run(void);
 
 void qd_ctrl_user_login(char *name, char* pw);
 
+// find user online by string
+void qd_ctrl_users_find_user(Eina_Stringshare *username);
+
 // reload if there are new pending games active
 void qd_ctrl_games_list_reload(void);
 
 // start a new game against a random player
 void qd_ctrl_game_new_random_player(void);
-
-// search for player
-void qd_ctrl_game_player_search(char *name);
 
 // round finished and updated answers in game struct, now send
 void qd_ctrl_answers_send(Qd_Game_Info *game);

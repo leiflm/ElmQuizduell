@@ -279,3 +279,15 @@ _failed:
     free(msg);
     return NULL;
 }
+
+Qd_Player *json_parse_users_find_user(const char *json)
+{
+    json_object *jobj, *player_jobj;
+
+    if (!(jobj = json_tokener_parse(json)) || !(player_jobj = json_object_object_get(jobj, "u")))
+    {
+        return NULL;
+    }
+
+    return _json_parse_player(player_jobj);
+}

@@ -13,6 +13,7 @@ static void _qd_ctrl_data_free(void);
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
+static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info);
 
 Qd_Player *player = NULL;
 Eina_List *games = NULL; // list of Qd_Game_Info*
@@ -25,6 +26,7 @@ static void _init_event_cbs(void)
     ecore_event_handler_add(QD_CON_USERS_LOGIN, _qd_ctrl_users_login_completed_cb, NULL);
     ecore_event_handler_add(QD_CON_GAMES_SPECIFIC_GAME_INFO, _qd_ctrl_games_specific_game_info_cb, NULL);
     ecore_event_handler_add(QD_CON_GAMES_SPECIFIC_GAME_INFO, _qd_ctrl_games_upload_round_answers_completed_cb, NULL);
+    ecore_event_handler_add(QD_CON_USERS_FIND_USER, _qd_ctrl_users_find_user_completed_cb, NULL);
 }
 
 Eina_Bool qd_ctrl_init(void)
@@ -206,6 +208,17 @@ void qd_ctrl_game_new_random_player(void)
     qd_view_games_list_page_show();
 }
 
+void qd_ctrl_users_find_user(Eina_Stringshare *username)
+{
+    Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
+    username = eina_stringshare_add(username);
+
+    eina_hash_add(hash, "opponent_name", username);
+
+    qd_con_request_with_params(NULL, "users/find_user", hash, QD_CON_USERS_FIND_USER, EINA_TRUE);
+    eina_hash_free(hash);
+}
+
 // static void _qd_ctrl_user_login_success()
 // {
 //     qd_config.username = _tmp_username;
@@ -291,6 +304,28 @@ static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EIN
     // }
 
     // eina_strbuf_free(bytes);
+
+    return EINA_TRUE;
+}
+
+static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
+{
+    Qd_Con_Request* rqst = event_info;
+    const char *server_response = eina_strbuf_string_get(rqst->buffer);
+    Qd_Player *player = json_parse_users_find_user(server_response);
+
+    printf("Player searched!\n");
+
+    if (player)
+    {
+        printf("Found player: %s\n", player->name);
+    }
+    else
+    {
+        printf("Found none though!\n");
+    }
+
+    eina_strbuf_free(rqst->buffer);
 
     return EINA_TRUE;
 }
