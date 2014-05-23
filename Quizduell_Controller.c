@@ -340,8 +340,6 @@ static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, i
         printf("Found none though!\n");
     }
 
-    eina_strbuf_free(rqst->buffer);
-
     return EINA_TRUE;
 }
 
