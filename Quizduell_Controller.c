@@ -248,7 +248,15 @@ void qd_ctrl_game_new_random_player(void)
 
 void qd_ctrl_users_find_user(Eina_Stringshare *username)
 {
-    Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
+    Eina_Hash *hash = NULL;
+
+    if (!username)
+    {
+        printf("Missing username to search for!\n");
+        return;
+    }
+
+    hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
     username = eina_stringshare_add(username);
 
     eina_hash_add(hash, "opponent_name", username);
