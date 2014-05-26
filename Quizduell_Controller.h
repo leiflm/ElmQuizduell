@@ -22,7 +22,7 @@ void qd_ctrl_users_add_friend(Qd_User_Id uid);
 void qd_ctrl_users_current_user_games(void);
 
 // start a new game against a specific player
-void qd_ctrl_games_create_game(const Qd_User_Id uid);
+void qd_ctrl_games_game_create(const Qd_User_Id uid);
 
 // give up a game
 void qd_ctrl_games_give_up(Qd_Game_Info *game_info);

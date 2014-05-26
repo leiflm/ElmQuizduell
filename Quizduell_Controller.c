@@ -316,7 +316,9 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
 
     // on login set new name
     // FIXME: use stringshare all over the place!
+    qd_ctrl_games_list_update();
     qd_view_user_name_set(strdup(_tmp_username));
+    qd_view_games_list_page_show();
 
     return EINA_TRUE;
 }
@@ -343,6 +345,7 @@ static Eina_Bool _qd_ctrl_users_current_user_games_completed_cb(void *data EINA_
             qd_view_info_message_show("Ooops", "Fechting current_user_games failed!");
         }
     }
+    qd_ctrl_games_list_update();
 
     return EINA_TRUE;
 }
@@ -389,7 +392,9 @@ static Eina_Bool _qd_ctrl_games_give_up_completed_cb(void *data EINA_UNUSED, int
         qd_server_message_free(msg);
     }
 
-    qd_view_game_stat_page_show(game);
+    //qd_view_game_stat_page_show(game);
+    qd_ctrl_games_list_update();
+    qd_view_games_list_page_show();
     return EINA_TRUE;
 }
 
@@ -404,7 +409,8 @@ static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, in
 
     if (json_parse_specific_game_info(game, server_response))
     {
-        qd_view_game_stat_page_show(game);
+        qd_ctrl_games_list_update();
+        qd_view_games_list_page_show();
     }
     else
     {
@@ -455,6 +461,7 @@ static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, i
     {
         printf("Found none though!\n");
     }
+    qd_view_search_player_completed_cb(player);
 
     return EINA_TRUE;
 }

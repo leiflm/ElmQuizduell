@@ -72,9 +72,11 @@ Evas_Object *qd_view_user_indicator_add(Evas_Object *parent)
 void qd_view_games_list_page_show(void)
 {
     Elm_Object_Item *bot_it;
-    qd_ctrl_games_list_update();
-    bot_it = elm_naviframe_bottom_item_get(view.layout);
-    elm_naviframe_item_pop_to (bot_it);
+    if (eina_list_count(elm_naviframe_items_get(view.layout)) > 1)
+    {
+        bot_it = elm_naviframe_bottom_item_get(view.layout);
+        elm_naviframe_item_pop_to (bot_it);
+    }
 }
 
 void qd_view_preferences_page_show(void)
@@ -128,10 +130,18 @@ void qd_view_login_page_show(void)
     elm_naviframe_item_push(view.layout, "login", NULL, NULL, view.login.layout, NULL);
 }
 
-void qd_view_new_game_page_show(void)
+void qd_view_new_game_page_show(Eina_List *friends)
 {
-    qd_view_new_game_page_add();
-    elm_naviframe_item_push(view.layout, "new game", NULL, NULL, view.new_game.layout, NULL);
+    Evas_Object *layout;
+    layout = qd_view_new_game_page_add(view.win, friends);
+    elm_naviframe_item_push(view.layout, "new game", NULL, NULL, layout, NULL);
+}
+
+void qd_view_search_player_page_show(void)
+{
+    Evas_Object *layout;
+    layout = qd_view_search_player_page_add(view.win);
+    elm_naviframe_item_push(view.layout, "Search player", NULL, NULL, layout, NULL);
 }
 
 void qd_view_message_ok_btn_clicked_cb(void *data, Evas_Object* obj, void *event)
@@ -204,4 +214,9 @@ void qd_view_shutdown(void)
     evas_shutdown();
     ecore_shutdown();
     eina_shutdown();
+}
+
+void qd_view_simple_evas_free_cb(void *data, Evas *e, Evas_Object *obj, void *ev)
+{
+    free(data);
 }

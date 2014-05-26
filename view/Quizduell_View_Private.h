@@ -16,6 +16,10 @@
         evas_object_size_hint_weight_set(_ev_obj_, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND); \
         evas_object_size_hint_align_set(_ev_obj_, EVAS_HINT_FILL, EVAS_HINT_FILL)
 
+#define EXPAND_HORI_AND_FILL(_ev_obj_) \
+        evas_object_size_hint_weight_set(_ev_obj_, EVAS_HINT_EXPAND, 0.0); \
+        evas_object_size_hint_align_set(_ev_obj_, EVAS_HINT_FILL, EVAS_HINT_FILL)
+
 typedef struct
 {
     Evas_Object *win;
@@ -81,14 +85,18 @@ Evas_Object *qd_view_user_indicator_add(Evas_Object *parent);
 Evas_Object *qd_view_category_page_add(Evas_Object *parent, Qd_Game_Info *game);
 Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game, Evas_Object *score_ic_box);
 Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game);
-//int qd_view_toolbar_add(void);
+void qd_view_search_player_page_show(void);
+Evas_Object *qd_view_search_player_page_add(Evas_Object *parent);
 int qd_view_login_page_add(void);
 int qd_view_games_list_page_add(void);
-int qd_view_new_game_page_add(void);
+Evas_Object *qd_view_new_game_page_add(Evas_Object *parent, Eina_List *friends);
 int qd_view_preferences_page_add(void);
 void qd_view_category_page_show(Qd_Game_Info *game);
 char *qd_view_category_title_get(Qd_Game_Info *game);
 void qd_view_game_stat_page_refresh_and_pop_to(Qd_Game_Info *game);
 Evas_Object *qd_view_question_title_score_ind_add(Evas_Object* parent, Qd_Game_Info *game);
+
+// evas event callback to free simple malloced data
+void qd_view_simple_evas_free_cb(void *data, Evas *e, Evas_Object *obj, void *ev);
 
 #endif

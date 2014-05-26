@@ -8,15 +8,23 @@ static void qd_view_new_game_clicked_rand_cb(void *data, Evas_Object *btn, void 
 static void qd_view_new_game_clicked_search_cb(void *data, Evas_Object *btn, void *event_info)
 {
     printf("Search player\n");
-    qd_view_info_message_show("Not implemented", "Search Player");
+    qd_view_search_player_page_show();
 }
 
-int qd_view_new_game_page_add(void)
+static void qd_view_new_game_friend_selected_cb(void *data, Evas_Object *obj, void *ev)
 {
-    Evas_Object *user_ind;
+    Qd_Player *pl = (Qd_Player *) data;
+    qd_ctrl_games_game_create(pl->user_id);
+}
+
+Evas_Object *qd_view_new_game_page_add(Evas_Object *parent, Eina_List *friends)
+{
+    Evas_Object *user_ind, *list, *frame, *ic;
+    Eina_List *l;
+    Qd_Player *pl;
     view.new_game.layout = elm_box_add(view.win);
-    evas_object_size_hint_align_set(view.new_game.layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_size_hint_weight_set(view.new_game.layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+    evas_object_size_hint_align_set(view.new_game.layout, EVAS_HINT_FILL, 0.0);
+    evas_object_size_hint_weight_set(view.new_game.layout, EVAS_HINT_EXPAND, 0.0);
 
     user_ind = qd_view_user_indicator_add(view.new_game.layout);
     elm_box_pack_end(view.new_game.layout, user_ind);
@@ -41,6 +49,26 @@ int qd_view_new_game_page_add(void)
     elm_box_pack_end(view.new_game.layout, view.new_game.search_btn);
     evas_object_show(view.new_game.rand_btn);
 
-    evas_object_hide(view.new_game.layout);
-    return 0;
+    // friends list
+    frame = elm_frame_add(view.new_game.layout);
+    EXPAND_AND_FILL(frame);
+    evas_object_show(frame);
+    elm_object_part_text_set(frame, NULL, "Friends");
+    list = elm_list_add(view.new_game.layout);
+    EXPAND_AND_FILL(list);
+    evas_object_show(list);
+
+    EINA_LIST_FOREACH(friends, l, pl)
+    {
+        ic = elm_icon_add(list);
+        elm_icon_standard_set(ic, "Add");
+        elm_list_item_append(list, pl->name, ic, NULL, qd_view_new_game_friend_selected_cb, pl);
+    }
+
+    elm_object_part_content_set(frame, NULL, list);
+    elm_list_go(list);
+    elm_box_pack_end(view.new_game.layout, frame);
+
+
+    return view.new_game.layout;
 }

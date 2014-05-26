@@ -192,7 +192,7 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game, 
     }
 
     layout = elm_table_add(parent);
-    evas_object_event_callback_add(layout, EVAS_CALLBACK_DEL, qd_view_question_page_del_cb, qqe);
+    evas_object_event_callback_add(layout, EVAS_CALLBACK_DEL, qd_view_simple_evas_free_cb, qqe);
 
     evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
