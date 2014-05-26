@@ -9,6 +9,7 @@ typedef struct
     Evas_Object *frame;
     Evas_Object *flip;
     Ecore_Timer *timer;
+    Evas_Object *score_ic[NO_QUESTIONS_PER_ROUND];
     Qd_Game_Info *game;
     int no;
 } Qd_Question_Elem;
@@ -18,6 +19,22 @@ void qd_view_question_next_clicked_cb(void *data, Evas *e, Evas_Object *obj, voi
 void qd_view_question_questions_text_set(Qd_Question_Elem *qqe);
 void qd_view_question_button_random_repack(Evas_Object *btns[4]);
 
+Evas_Object *qd_view_question_title_score_ind_add(Evas_Object* parent, Qd_Game_Info *game)
+{
+    Evas_Object *layout, *ic;
+    int i;
+    layout = elm_box_add(parent);
+    elm_box_horizontal_set(layout, EINA_TRUE);
+    for (i = 0; i < NO_QUESTIONS_PER_ROUND; i++)
+    {
+       ic = elm_icon_add(layout);
+       EXPAND_AND_FILL(ic);
+       elm_box_pack_end(layout, ic);
+       evas_object_show(ic);
+    }
+    evas_object_show(layout);
+    return layout;
+}
 void qd_view_question_question_finished(Qd_Question_Elem *qqe)
 {
     int i;
@@ -102,9 +119,15 @@ void qd_view_question_answer_clicked_cb(void *data, Evas_Object* obj, void *ev)
     printf("answer %i, question %i\n", ans, qqe->no);
     // check answer here or ...
     if (ans == 0)
+    {
         evas_object_color_set(obj, 0, 255, 0, 255);
+        elm_icon_standard_set(qqe->score_ic[qqe->no], "info");
+    }
     else
+    {
         evas_object_color_set(obj, 255, 0, 0, 255);
+        elm_icon_standard_set(qqe->score_ic[qqe->no], "error");
+    }
 
     qqe->game->your_answers[qqe->game->round][qqe->no] = ans;
 
@@ -152,14 +175,21 @@ void qd_view_question_reveal_clicked_cb(void *data, Evas_Object* obj, void *ev)
     qqe->timer = ecore_animator_add(_animator_cb, qqe);
 }
 
-Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game)
+Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game, Evas_Object *score_ic_box)
 {
     Evas_Object* layout;
-    Evas_Object* cat_icon;
+    Evas_Object *cat_icon, *ic;
     Qd_Question_Elem *qqe;
+    Eina_List *ic_l;
     qqe = malloc(sizeof(Qd_Question_Elem));
     qqe->no = 0;
+    int i = 0;
     qqe->game = game;
+    ic_l = elm_box_children_get(score_ic_box);
+    EINA_LIST_FREE(ic_l, ic)
+    {
+        qqe->score_ic[i++] = ic;
+    }
 
     layout = elm_table_add(parent);
     evas_object_event_callback_add(layout, EVAS_CALLBACK_DEL, qd_view_question_page_del_cb, qqe);

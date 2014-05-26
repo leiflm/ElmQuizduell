@@ -1,5 +1,12 @@
 #include "Quizduell_View_Private.h"
 
+char *qd_view_category_title_get(Qd_Game_Info *game)
+{
+    char *text = calloc(128, sizeof(char));
+    snprintf(text, 127, "Round %i against %s", (game->round + 1), game->opponent->name);
+    return text;
+}
+
 void qd_view_category_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
     int i;

@@ -161,7 +161,7 @@ Evas_Object * qd_view_game_stat_cat_add(Evas_Object *parent, const char *cat_nam
 {
     Evas_Object *layout, *lb_r, *lb_c;
     char r[32];
-    snprintf(r, 31, "<b>Round %i</b>", round);
+    snprintf(r, 31, "<b>Round %i</b>", (round + 1));
 
     layout = elm_box_add(parent);
     lb_r = elm_label_add(layout);
@@ -197,7 +197,7 @@ void qd_view_game_stat_play_clicked_cb(void *data, Evas_Object *obj, void *ev)
 
 void qd_view_game_stat_retire_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
-    printf("cant retire\n");
+    printf("cant give up yet\n");
 }
 
 void qd_view_game_stat_calc_round(Qd_Game_Info *game)
@@ -265,7 +265,7 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
     evas_object_size_hint_weight_set(retire_btn, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     elm_table_pack(layout, retire_btn, 0, NO_ROUNDS_PER_GAME + 2, 1, 1);
     evas_object_smart_callback_add(retire_btn, "clicked", qd_view_game_stat_retire_clicked_cb, NULL);
-    elm_object_part_text_set(retire_btn, "default", "Retire");
+    elm_object_part_text_set(retire_btn, "default", "Give up");
     evas_object_show(retire_btn);
 
 

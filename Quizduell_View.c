@@ -94,20 +94,32 @@ void qd_view_game_stat_page_show(Qd_Game_Info *game)
 void qd_view_category_page_show(Qd_Game_Info *game)
 {
     Evas_Object* page_layout;
-    // should get data 
+    Elm_Object_Item *it;
+    char *title;
     page_layout = qd_view_category_page_add(view.win, game);
+    title = qd_view_category_title_get(game);
     
-    elm_naviframe_item_push(view.layout, "Select a category", NULL, NULL, page_layout, NULL);
+    elm_naviframe_prev_btn_auto_pushed_set(view.layout, EINA_FALSE);
+    it = elm_naviframe_item_push(view.layout, title, NULL, NULL, page_layout, NULL);
+    elm_naviframe_prev_btn_auto_pushed_set(view.layout, EINA_TRUE);
+    free(title);
+    //elm_naviframe_item_title_enabled_set(it, EINA_FALSE, EINA_FALSE);
 }
 
 void qd_view_question_page_show(Qd_Game_Info *game)
 {
-    Evas_Object* page_layout;
+    Evas_Object* page_layout, *title_obj_l;
     Elm_Object_Item *it;
+    char *title;
     // should get data 
-    page_layout = qd_view_question_page_add(view.win, game);
-    it = elm_naviframe_item_push(view.layout, "", NULL, NULL, page_layout, NULL);
-    elm_naviframe_item_title_enabled_set(it, EINA_FALSE, EINA_FALSE);
+    title_obj_l = qd_view_question_title_score_ind_add(view.win, game);
+    page_layout = qd_view_question_page_add(view.win, game, title_obj_l);
+    title = qd_view_category_title_get(game);
+    elm_naviframe_prev_btn_auto_pushed_set(view.layout, EINA_FALSE);
+    it = elm_naviframe_item_push(view.layout, title, title_obj_l, NULL, page_layout, NULL);
+    elm_naviframe_prev_btn_auto_pushed_set(view.layout, EINA_TRUE);
+    free(title);
+    //elm_naviframe_item_title_enabled_set(it, EINA_FALSE, EINA_FALSE);
 }
 
 void qd_view_login_page_show(void)
