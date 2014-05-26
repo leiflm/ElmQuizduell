@@ -179,7 +179,6 @@ Eina_Bool qd_con_request_with_params(const Qd_Game_Info *game_info, const char *
         const char *key = tuple->key;
         Eina_Stringshare *value = tuple->data;
         eina_strbuf_append_printf(request_payload, "&%s=%s", key, value);
-        eina_stringshare_del(value);
     }
     eina_iterator_free(it); // Always free the iterator after its use
     tuple = NULL;
