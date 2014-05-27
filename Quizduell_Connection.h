@@ -28,6 +28,8 @@ extern int QD_CON_GAMES_GIVE_UP;
 Eina_Bool qd_con_init(void);
 void qd_con_shutdown(void);
 
+Eina_Bool qd_con_cookie_exists(void);
+
 /**
  @brief Create and send a request with given parameters
  @param game_info Used for running game requests

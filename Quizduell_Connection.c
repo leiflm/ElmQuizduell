@@ -4,6 +4,7 @@
 #include <bsd/string.h>
 #include <time.h>
 #include <Eina.h>
+#include <Ecore_File.h>
 #include <Ecore_Con.h>
 #include "Quizduell_Config.h"
 #include "Quizduell_Crypto.h"
@@ -43,6 +44,11 @@ static void _qd_con_request_free_cb(void *user_data, void *func_data)
     Qd_Con_Request *rqst = user_data;
     eina_strbuf_free(rqst->buffer), rqst->buffer = NULL;
     free(rqst);
+}
+
+Eina_Bool qd_con_cookie_exists(void)
+{
+    return ecore_file_exists(COOKIE_JAR_FILE);
 }
 
 static void _init_events(void)

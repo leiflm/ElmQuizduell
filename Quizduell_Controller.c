@@ -57,6 +57,8 @@ void qd_ctrl_shutdown(void)
 
 void qd_ctrl_run(void)
 {
+    if (qd_con_cookie_exists)
+        qd_ctrl_users_current_user_games();
     ecore_main_loop_begin();
 }
 
@@ -354,7 +356,11 @@ static Eina_Bool _qd_ctrl_users_current_user_games_completed_cb(void *data EINA_
         {
             qd_view_info_message_show("Ooops", "Fechting current_user_games failed!");
         }
+    }
+    else
+    {
         qd_ctrl_games_list_update();
+        qd_view_user_name_set(player->name);
     }
 
     return EINA_TRUE;
