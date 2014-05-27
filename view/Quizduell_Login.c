@@ -1,27 +1,15 @@
 #include "Quizduell_View_Private.h"
 #include "Quizduell_Controller.h"
 
-static void qd_view_user_data_from_entry_get(char **un, char **pw)
-{
-    const char *_un, *_pw;
-    size_t len;
-
-    _un = elm_entry_entry_get(view.login.en_user);
-    len = strlen(_un);
-    *un = malloc(len + 1);
-    snprintf(*un, len + 1, "%s", _un); 
-
-    _pw = elm_entry_entry_get(view.login.en_pw);
-    len = strlen(_pw);
-    *pw = malloc(len + 1);
-    snprintf(*pw, len + 1, "%s", _pw); 
-}
-
 static void qd_view_login_page_clicked_ok_cb(void *data, Evas_Object *btn, void *event_info)
 {
-    char *un, *pw;
-    qd_view_user_data_from_entry_get(&un, &pw);
-    qd_ctrl_user_login(un, pw);
+    Eina_Stringshare *name, *pwd;
+
+    name = eina_stringshare_add(elm_entry_entry_get(view.login.en_user));
+    pwd = eina_stringshare_add(elm_entry_entry_get(view.login.en_pw));
+    qd_ctrl_users_login(name, pwd);
+    eina_stringshare_del(name);
+    eina_stringshare_del(pwd);
 }
 
 int qd_view_login_page_add(void)

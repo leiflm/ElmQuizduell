@@ -23,8 +23,8 @@ Qd_Player *player = NULL;
 Eina_List *games = NULL; // list of Qd_Game_Info*
 Eina_List *friends = NULL; // list of Qd_Player*
 
-static Eina_Stringshare *_tmp_username = NULL;
-static Eina_Stringshare *_tmp_password = NULL;
+static Eina_Stringshare *username = NULL;
+static Eina_Stringshare *password = NULL;
 
 static void _init_event_cbs(void)
 {
@@ -49,8 +49,8 @@ Eina_Bool qd_ctrl_init(void)
 void qd_ctrl_shutdown(void)
 {
     _qd_ctrl_data_free();
-    eina_stringshare_del(_tmp_username), _tmp_username = NULL;
-    eina_stringshare_del(_tmp_password), _tmp_password = NULL;
+    eina_stringshare_del(username), username = NULL;
+    eina_stringshare_del(password), password = NULL;
     ecore_shutdown();
     eina_shutdown();
 }
@@ -68,12 +68,12 @@ void qd_ctrl_users_create(Eina_Stringshare *name, Eina_Stringshare *pwd)
     printf("creating account for: %s, pwd: %s\n", name, pwd);
 
     //TODO: Add lock for login try
-    _tmp_username = eina_stringshare_add(name);
-    _tmp_password = eina_stringshare_add(pwd);
-    _password_hash = qd_crypto_create_password_hash(_tmp_password);
+    username = eina_stringshare_add(name);
+    password = eina_stringshare_add(pwd);
+    _password_hash = qd_crypto_create_password_hash(password);
 
     Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
-    eina_hash_add(hash, "name", _tmp_username);
+    eina_hash_add(hash, "name", eina_stringshare_add(username));
     eina_hash_add(hash, "pwd", eina_stringshare_add(_password_hash));
     qd_con_request_with_params(NULL, "users/create", hash, QD_CON_USERS_LOGIN, EINA_TRUE);
     eina_hash_free(hash);
@@ -81,18 +81,18 @@ void qd_ctrl_users_create(Eina_Stringshare *name, Eina_Stringshare *pwd)
     free(_password_hash);
 }
 
-void qd_ctrl_user_login(char *name, char *pw)
+void qd_ctrl_users_login(Eina_Stringshare *name, Eina_Stringshare *pwd)
 {
     char *_password_hash = NULL;
-    printf("logging in: %s, pw: %s\n", name, pw);
+    printf("logging in: %s, pw: %s\n", name, pwd);
 
     //TODO: Add lock for login try
-    _tmp_username = eina_stringshare_add(name);
-    _tmp_password = eina_stringshare_add(pw);
-    _password_hash = qd_crypto_create_password_hash(_tmp_password);
+    username = eina_stringshare_add(name);
+    password = eina_stringshare_add(pwd);
+    _password_hash = qd_crypto_create_password_hash(password);
 
     Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
-    eina_hash_add(hash, "name", eina_stringshare_add(_tmp_username));
+    eina_hash_add(hash, "name", eina_stringshare_add(username));
     eina_hash_add(hash, "pwd", eina_stringshare_add(_password_hash));
     qd_con_request_with_params(NULL, "users/login", hash, QD_CON_USERS_LOGIN, EINA_TRUE);
     eina_hash_free(hash);
@@ -312,14 +312,14 @@ void qd_ctrl_users_add_friend(Qd_User_Id uid)
 
 // static void _qd_ctrl_user_login_success()
 // {
-//     qd_config.username = _tmp_username;
-//     qd_config.password = _tmp_password;
+//     qd_config.username = username;
+//     qd_config.password = password;
 // }
 
 // static void _qd_ctrl_user_login_failure()
 // {
-//     eina_stringshare_del(_tmp_username), _tmp_username = NULL;
-//     eina_stringshare_del(_tmp_password), _tmp_password = NULL;
+//     eina_stringshare_del(username), username = NULL;
+//     eina_stringshare_del(password), password = NULL;
 // }
 
 static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
@@ -349,7 +349,7 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
     // on login set new name
     // FIXME: use stringshare all over the place!
     qd_ctrl_games_list_update();
-    qd_view_user_name_set(strdup(_tmp_username));
+    qd_view_user_name_set(username);
     qd_view_games_list_page_show();
 
     return EINA_TRUE;

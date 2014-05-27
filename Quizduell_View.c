@@ -8,14 +8,16 @@
 #include "Quizduell_Config.h"
 #include "view/Quizduell_View_Private.h"
 
-void qd_view_user_name_set(const char *name)
+
+static void _qd_view_stringshare_free_cb(void *user_data, void *func_data)
 {
-    char *str;
-    size_t len;
-    len = strlen(name) + 1;
-    str = malloc(len);
-    snprintf(str, len, "%s", name);
-    ecore_event_add(QD_EVENT_USER_NAME_CHANGED, str, NULL, str);
+    eina_stringshare_del(user_data);
+}
+
+void qd_view_user_name_set(Eina_Stringshare *name)
+{
+    name = eina_stringshare_add(name);
+    ecore_event_add(QD_EVENT_USER_NAME_CHANGED, (void*)name, _qd_view_stringshare_free_cb, (void*)name);
 }
 
 Eina_Bool qd_view_set_user_name_ev_hd_cb(void *data, int type, void *ev)

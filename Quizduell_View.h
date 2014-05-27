@@ -7,7 +7,7 @@
 int qd_view_init(int argc, char **argv);
 void qd_view_shutdown(void);
 
-void qd_view_user_name_set(const char *name);
+void qd_view_user_name_set(Eina_Stringshare *name);
 void qd_view_games_list_page_show(void);
 void qd_view_login_page_show(void);
 void qd_view_new_game_page_show(Eina_List *friends);
