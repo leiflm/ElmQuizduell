@@ -332,17 +332,6 @@ static Eina_Bool _qd_ctrl_users_login_completed_cb(void *data EINA_UNUSED, int t
 
     if (!json_parse_login(server_response))
     {
-        Qd_Server_Message *msg = json_parse_server_message(server_response);
-
-        if (msg)
-        {
-            qd_view_info_message_show(msg->title, msg->msg);
-            qd_server_message_free(msg);
-        }
-        else
-        {
-            qd_view_info_message_show("Ooops", "Login failed!");
-        }
         return EINA_TRUE;
     }
 
@@ -363,21 +352,7 @@ static Eina_Bool _qd_ctrl_users_current_user_games_completed_cb(void *data EINA_
     printf("Fetched current_user_games completed\n");
     printf("%s\n", server_response);
 
-    if (!json_parse_users_current_user_games(server_response))
-    {
-        Qd_Server_Message *msg = json_parse_server_message(server_response);
-
-        if (msg)
-        {
-            qd_view_info_message_show(msg->title, msg->msg);
-            qd_server_message_free(msg);
-        }
-        else
-        {
-            qd_view_info_message_show("Ooops", "Fechting current_user_games failed!");
-        }
-    }
-    else
+    if (json_parse_users_current_user_games(server_response))
     {
         qd_ctrl_games_list_update();
         qd_view_user_name_set(player->name);
@@ -412,7 +387,6 @@ static Eina_Bool _qd_ctrl_games_give_up_completed_cb(void *data EINA_UNUSED, int
     Qd_Con_Request* rqst = event_info;
     const char *server_response = eina_strbuf_string_get(rqst->buffer);
     Qd_Game_Info *game = (Qd_Game_Info*)rqst->game_info;
-    Qd_Server_Message *msg = json_parse_server_message(server_response);
 
     printf("Received specific game info\n");
     printf("%s\n", server_response);
@@ -420,12 +394,6 @@ static Eina_Bool _qd_ctrl_games_give_up_completed_cb(void *data EINA_UNUSED, int
     if (!json_parse_game_info_game(game, server_response))
     {
         qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
-    }
-    
-    if (msg)
-    {
-        qd_view_info_message_show(msg->title, msg->msg);
-        qd_server_message_free(msg);
     }
 
     //qd_view_game_stat_page_show(game);
@@ -501,20 +469,6 @@ static Eina_Bool _qd_ctrl_users_find_user_completed_cb(void *data EINA_UNUSED, i
 
 static Eina_Bool _qd_ctrl_users_add_friend_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
 {
-    Qd_Con_Request* rqst = event_info;
-    const char *server_response = eina_strbuf_string_get(rqst->buffer);
-    Qd_Server_Message *msg = json_parse_server_message(server_response);
-
-    if (msg)
-    {
-        qd_view_info_message_show(msg->title, msg->msg);
-        qd_server_message_free(msg);
-    }
-    else
-    {
-        printf("Could not add friend!\n");
-    }
-
     return EINA_TRUE;
 }
 

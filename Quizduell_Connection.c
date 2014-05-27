@@ -10,6 +10,8 @@
 #include "Quizduell_Crypto.h"
 #include "Quizduell_Structures.h"
 #include "Quizduell_Connection.h"
+#include "Quizduell_Game_Json.h"
+#include "Quizduell_View.h"
 
 static const char URL_REQUEST_CONTENT_TYPE[] = "application/x-www-form-urlencoded";
 static const char COOKIE_JAR_FILE[] = "/tmp/qd_cookies.txt";
@@ -241,6 +243,14 @@ static Eina_Bool _qd_con_url_request_completed_cb(void *data EINA_UNUSED, int ty
 {
     Ecore_Con_Event_Url_Complete *url_complete = event_info;
     Qd_Con_Request *rqst = ecore_con_url_data_get(url_complete->url_con);
+    const char *server_response = eina_strbuf_string_get(rqst->buffer);
+    Qd_Server_Message *msg = json_parse_server_message(server_response);
+
+    if (msg)
+    {
+        qd_view_info_message_show(msg->title, msg->msg);
+        qd_server_message_free(msg);
+    }
     ecore_event_add(rqst->type, rqst, _qd_con_request_free_cb, rqst);
     ecore_con_url_cookies_jar_write(url_complete->url_con);
     ecore_con_url_free(url_complete->url_con);
