@@ -65,7 +65,7 @@ Evas_Object *qd_view_search_player_page_add(Evas_Object *parent)
     // box as layout
     layout = elm_box_add(parent);
     evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, 0.0);
-    evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, 0.0);
+    evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_FILL);
 
     si = calloc(1, sizeof(Qd_Search_Info));
     evas_object_event_callback_add(layout, EVAS_CALLBACK_DEL, qd_view_simple_evas_free_cb, si);
@@ -100,7 +100,7 @@ Evas_Object *qd_view_search_player_page_add(Evas_Object *parent)
     
     // new game button
     si->new_game_btn = elm_button_add(layout);
-    EXPAND_AND_FILL(si->new_game_btn);
+    EXPAND_HORI_AND_FILL(si->new_game_btn);
     elm_box_pack_end(layout, si->new_game_btn);
 
     return layout;

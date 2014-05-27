@@ -40,7 +40,6 @@ void qd_view_set_user_ev_handler_del_cb(void *data, Evas *e, Evas_Object *obj, v
 Evas_Object *qd_view_user_indicator_add(Evas_Object *parent)
 {
     Evas_Object *box, *layout, *name_obj;
-    Eina_Stringshare *name;
     Ecore_Event_Handler *hd;
 
     // use a fram as main layout obj
@@ -54,8 +53,11 @@ Evas_Object *qd_view_user_indicator_add(Evas_Object *parent)
 
     // Label for user name
     name_obj = elm_label_add(layout);
-    name = eina_stringshare_add(qd_config.username);
-    elm_object_part_text_set(name_obj, "default", name);
+    if (player)
+        elm_object_part_text_set(name_obj, "default", player->name);
+    else
+        elm_object_part_text_set(name_obj, "default", "nobody");
+
     evas_object_size_hint_align_set(name_obj, 0.0, 0.0);
     evas_object_size_hint_weight_set(name_obj, EVAS_HINT_EXPAND, 0.0); 
     evas_object_show(name_obj);
