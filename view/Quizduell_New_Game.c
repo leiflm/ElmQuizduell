@@ -72,3 +72,55 @@ Evas_Object *qd_view_new_game_page_add(Evas_Object *parent, Eina_List *friends)
 
     return view.new_game.layout;
 }
+
+typedef struct
+{
+    Evas_Object *popup;
+    Qd_Game_Info *game;
+} Qd_Challenge_Popup;
+
+static void qd_view_new_game_clicked_accept_cb(void *data, Evas_Object* obj, void *event)
+{
+    Qd_Challenge_Popup* cp = (Qd_Challenge_Popup *) data;
+    cp->game->state = QD_GAME_STATE_PLAYING;
+    cp->game->your_turn = EINA_TRUE;
+    qd_view_games_list_active_item_add(cp->game);
+
+    evas_object_hide(cp->popup);
+    evas_object_del(cp->popup);
+}
+
+static void qd_view_new_game_clicked_decline_cb(void *data, Evas_Object* obj, void *event)
+{
+    Qd_Challenge_Popup* cp = (Qd_Challenge_Popup *) data;
+
+    evas_object_hide(cp->popup);
+    evas_object_del(cp->popup);
+}
+
+void qd_view_new_game_challenge_popup(Qd_Game_Info *game)
+{
+    Evas_Object *accept_btn, *decline_btn;
+    char msg[128];
+    Qd_Challenge_Popup *cp = calloc(1, sizeof(Qd_Challenge_Popup *));
+
+    cp->game = game;
+    snprintf(msg, 127, "%s wants to challenge you!", game->opponent->name);
+
+    cp->popup = elm_popup_add(view.games_list.layout);
+    elm_object_part_text_set(cp->popup, "title,text", "Challenge");
+    elm_object_part_text_set(cp->popup, "default", msg);
+    accept_btn = elm_button_add(cp->popup);
+    elm_object_part_text_set(accept_btn, "default", "Accept");
+    evas_object_smart_callback_add(accept_btn, "clicked", qd_view_new_game_clicked_accept_cb, cp);
+    elm_object_part_content_set(cp->popup, "button1", accept_btn);
+
+    decline_btn = elm_button_add(cp->popup);
+    elm_object_part_text_set(decline_btn, "default", "Decline");
+    evas_object_smart_callback_add(decline_btn, "clicked", qd_view_new_game_clicked_decline_cb, cp);
+    elm_object_part_content_set(cp->popup, "button2", decline_btn);
+
+    evas_object_event_callback_add(cp->popup, EVAS_CALLBACK_DEL, qd_view_simple_evas_free_cb, cp);
+
+    evas_object_show(cp->popup);
+}

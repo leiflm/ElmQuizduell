@@ -132,19 +132,28 @@ void qd_ctrl_games_list_update(void)
     qd_view_games_list_clear();
     EINA_LIST_FOREACH(games, l, game)
     {
-        if (game->state == QD_GAME_STATE_PLAYING)
+        switch (game->state)
         {
-            if (game->your_turn)
+            case QD_GAME_STATE_PLAYING:
             {
-                qd_view_games_list_active_item_add(game);
+                if (game->your_turn)
+                {
+                    qd_view_games_list_active_item_add(game);
+                }
+                else
+                {
+                    qd_view_games_list_inactive_item_add(game);
+                }
+                break;
             }
-            else
+            case QD_GAME_STATE_NONE:
             {
-                qd_view_games_list_inactive_item_add(game);
+                qd_view_new_game_challenge_popup(game);
+                break;
             }
+            default:
+                qd_view_games_list_done_item_add(game);
         }
-        else
-            qd_view_games_list_done_item_add(game);
     }
 }
 

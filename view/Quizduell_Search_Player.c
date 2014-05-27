@@ -62,7 +62,7 @@ void qd_view_search_player_completed_cb(Qd_Player *pl)
 
 Evas_Object *qd_view_search_player_page_add(Evas_Object *parent)
 {
-    Evas_Object *frame, *layout, *search_btn;
+    Evas_Object *frame, *layout, *search_btn, *ic;
     // box as layout
     layout = elm_box_add(parent);
     evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, 0.0);
@@ -86,6 +86,9 @@ Evas_Object *qd_view_search_player_page_add(Evas_Object *parent)
     // Search button
     search_btn = elm_button_add(layout);
     elm_object_part_text_set(search_btn, "default", "search");
+    ic = elm_icon_add(layout);
+    elm_icon_standard_set(ic, "edit-find");
+    elm_object_part_content_set(search_btn, "icon", ic);
     EXPAND_HORI_AND_FILL(search_btn);
     elm_box_pack_end(layout, search_btn);
     evas_object_show(search_btn);
