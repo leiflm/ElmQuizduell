@@ -184,14 +184,22 @@ Evas_Object * qd_view_game_stat_cat_add(Evas_Object *parent, const char *cat_nam
 void qd_view_game_stat_play_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
     Qd_Game_Info *game = (Qd_Game_Info *) data;
-    printf("play round %i \n", game->round);
-    if (game->your_turn && (game->opponent_answers[game->round][0] == QD_INVALID_VALUE))
+
+    if (game->state > QD_GAME_STATE_PLAYING)
     {
-        qd_view_category_page_show(game);
+        qd_ctrl_games_game_create(game->opponent->user_id);
     }
     else
     {
-        qd_view_question_page_show(game);
+        printf("play round %i \n", game->round);
+        if (game->your_turn && (game->opponent_answers[game->round][0] == QD_INVALID_VALUE))
+        {
+            qd_view_category_page_show(game);
+        }
+        else
+        {
+            qd_view_question_page_show(game);
+        }
     }
 }
 
@@ -252,11 +260,17 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
     pl_btn = elm_button_add(layout);
     evas_object_size_hint_align_set(pl_btn, EVAS_HINT_FILL, 0.0);
     evas_object_size_hint_weight_set(pl_btn, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    elm_object_part_text_set(pl_btn, "default", "Play");
     elm_table_pack(layout, pl_btn, 1, NO_ROUNDS_PER_GAME + 2, 1, 1);
     evas_object_smart_callback_add(pl_btn, "clicked", qd_view_game_stat_play_clicked_cb, (void *) game);
-    if (!game->your_turn)
-        elm_object_disabled_set(pl_btn, EINA_TRUE);
+    if (game->state <= QD_GAME_STATE_PLAYING)
+    {
+        elm_object_part_text_set(pl_btn, "default", "Play");
+        if (!game->your_turn)
+            elm_object_disabled_set(pl_btn, EINA_TRUE);
+    }
+    else
+        elm_object_part_text_set(pl_btn, "default", "Again");
+
     evas_object_show(pl_btn);
 
     // add play button
@@ -266,6 +280,8 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
     elm_table_pack(layout, retire_btn, 0, NO_ROUNDS_PER_GAME + 2, 1, 1);
     evas_object_smart_callback_add(retire_btn, "clicked", qd_view_game_stat_retire_clicked_cb, NULL);
     elm_object_part_text_set(retire_btn, "default", "Give up");
+    if (game->state > QD_GAME_STATE_PLAYING)
+        elm_object_disabled_set(retire_btn, EINA_TRUE);
     evas_object_show(retire_btn);
 
 
