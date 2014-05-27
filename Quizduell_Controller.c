@@ -438,25 +438,23 @@ static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, in
 
 static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EINA_UNUSED, int type EINA_UNUSED, void *event_info)
 {
-    // Eina_Strbuf *bytes = event_info;
-    // const char *server_response = eina_strbuf_string_get(bytes);
-    // Qd_Game_Info *game = NULL;
+    Qd_Con_Request *rqst = event_info;
+    const char *server_response = eina_strbuf_string_get(rqst->buffer);
+    Qd_Game_Info *game = NULL;
+    Qd_Game_Id game_id = json_parse_game_for_game_id(server_response);
+    Eina_List *iter;
 
     printf("Values were uploaded!\n");
-    // printf("%s\n", eina_strbuf_string_get(bytes));
 
-    // game = json_parse_specific_game_info(server_response);
-
-    // if (game)
-    // {
-    //     qd_view_game_stat_page_show(game);
-    // }
-    // else
-    // {
-    //     qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
-    // }
-
-    // eina_strbuf_free(bytes);
+    EINA_LIST_FOREACH(games, iter, game)
+    {
+        if (game->game_id == game_id)
+        {
+            json_parse_game_info_game(game, server_response);
+            printf("Game Info structure was updated in-place too!\n");
+            break;
+        }
+    }
 
     return EINA_TRUE;
 }

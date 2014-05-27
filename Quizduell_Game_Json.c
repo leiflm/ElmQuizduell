@@ -7,6 +7,20 @@
 static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_object *jobj);
 static Qd_Player *_json_parse_player(json_object *jobj);
 
+Qd_Game_Id json_parse_game_for_game_id(const char *json)
+{
+    json_object *jobj, *tmp = NULL;
+
+    if (!(jobj = json_tokener_parse(json))
+        || !(tmp = json_object_object_get(jobj, "game"))
+        || !(tmp = json_object_object_get(tmp, "game_id")))
+    {
+        return 0;
+    }
+
+    return json_object_get_int64(tmp);
+}
+
 static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_object *jobj)
 {
     Qd_Game_Info *game_info = NULL;

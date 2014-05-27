@@ -9,5 +9,6 @@ Eina_Bool json_parse_users_current_user_games(const char *json);
 Eina_Bool json_parse_login(const char *json);
 Qd_Server_Message *json_parse_server_message(const char *json);
 Qd_Player *json_parse_users_find_user(const char *json);
+Qd_Game_Id json_parse_game_for_game_id(const char *json);
 
 #endif
