@@ -204,6 +204,7 @@ Evas_Object *qd_view_question_page_add(Evas_Object *parent, Qd_Game_Info *game, 
     evas_object_show(cat_icon);
 
     qqe->question = elm_label_add(qqe->frame);
+    elm_label_line_wrap_set(qqe->question, ELM_WRAP_WORD);
 
     elm_object_part_content_set(qqe->frame, "default", qqe->question);
     evas_object_show(qqe->question);
