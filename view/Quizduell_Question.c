@@ -73,12 +73,13 @@ void qd_view_question_next_clicked_cb(void *data, Evas *e, Evas_Object *obj, voi
     // check if last question
     if (qqe->no == 3)
     {
-        // send answers to ctrl
-        qd_ctrl_answers_send(qqe->game);
         // cheeck if next turn
-        if (qqe->game->opponent_answers[qqe->game->round][0] == QD_INVALID_VALUE)
+        if ((qqe->game->opponent_answers[qqe->game->round][0] == QD_INVALID_VALUE)
+            || (qqe->game->round == (NO_ROUNDS_PER_GAME - 1)))
         {
             qqe->game->your_turn = EINA_FALSE;
+            // send answers to ctrl
+            qd_ctrl_answers_send(qqe->game);
         }
         else
         {
