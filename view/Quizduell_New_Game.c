@@ -2,7 +2,7 @@
 
 static void qd_view_new_game_clicked_rand_cb(void *data, Evas_Object *btn, void *event_info)
 {
-    qd_ctrl_game_new_random_player();
+    printf("Random Player\n");
 }
 
 static void qd_view_new_game_clicked_search_cb(void *data, Evas_Object *btn, void *event_info)
