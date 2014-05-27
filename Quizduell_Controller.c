@@ -183,6 +183,7 @@ void qd_ctrl_answers_send(Qd_Game_Info *game)
     snprintf(buf, sizeof(buf), "%lu", game->game_id);
     eina_hash_add(hash, "game_id", eina_stringshare_add(buf));
 
+    eina_strbuf_append(strbuf, "[");
     for (int i = 0; i < NO_ROUNDS_PER_GAME; i++)
     {
         for (int j = 0; j < NO_QUESTIONS_PER_ROUND; j++)
@@ -199,7 +200,7 @@ void qd_ctrl_answers_send(Qd_Game_Info *game)
         }
     }
     eina_strbuf_append(strbuf, "]");
-    eina_hash_add(hash, "game_id", eina_stringshare_add(eina_strbuf_string_get(strbuf)));
+    eina_hash_add(hash, "answers", eina_stringshare_add(eina_strbuf_string_get(strbuf)));
     eina_strbuf_free(strbuf);
 
     qd_con_request_with_params(game, "games/upload_round_answers", hash, QD_CON_GAMES_UPLOAD_ROUND_ANSWERS, EINA_TRUE);
