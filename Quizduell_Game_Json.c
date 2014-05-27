@@ -139,7 +139,7 @@ Qd_Game_Info *json_parse_game_info_game(Qd_Game_Info *_game_info, const char *js
     return _json_parse_game_info_game(_game_info, jobj);
 }
 
-Eina_Bool json_parse_current_game_info(const char *json)
+Eina_Bool json_parse_users_current_user_games(const char *json)
 {
     json_object *user = NULL, *tmp = NULL;
     array_list *arr = NULL;
@@ -184,7 +184,7 @@ Eina_Bool json_parse_current_game_info(const char *json)
 
 Eina_Bool json_parse_login(const char *json)
 {
-    return json_parse_current_game_info(json);
+    return json_parse_users_current_user_games(json);
 }
 
 Qd_Question *_json_parse_question(json_object *jobj)

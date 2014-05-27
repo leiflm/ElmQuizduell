@@ -340,7 +340,7 @@ static Eina_Bool _qd_ctrl_users_current_user_games_completed_cb(void *data EINA_
     printf("Fetched current_user_games completed\n");
     printf("%s\n", server_response);
 
-    if (!json_parse_current_game_info(server_response))
+    if (!json_parse_users_current_user_games(server_response))
     {
         Qd_Server_Message *msg = json_parse_server_message(server_response);
 
