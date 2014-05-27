@@ -24,7 +24,6 @@ static void qd_view_search_player_clicked_new_game_cb(void *data, Evas_Object *b
 
 static void qd_view_search_player_clicked_search_cb(void *data, Evas_Object *btn, void *event_info)
 {
-    Eina_Stringshare *name;
     const char *text;
 
     text = elm_entry_entry_get(si->en);
