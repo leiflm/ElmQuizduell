@@ -96,12 +96,15 @@ static Eina_List *_get_sorted_list_for_params(const Eina_Hash *params_hashlist)
     Eina_Iterator *iter = NULL;
     const char *val = NULL;
 
-    iter = eina_hash_iterator_data_new(params_hashlist);
-    EINA_ITERATOR_FOREACH(iter, val)
+    if (params_hashlist)
     {
-        sorted_list = eina_list_sorted_insert(sorted_list, (Eina_Compare_Cb)strcmp, val);
+        iter = eina_hash_iterator_data_new(params_hashlist);
+        EINA_ITERATOR_FOREACH(iter, val)
+        {
+            sorted_list = eina_list_sorted_insert(sorted_list, (Eina_Compare_Cb)strcmp, val);
+        }
+        eina_iterator_free(iter);
     }
-    eina_iterator_free(iter);
 
     return sorted_list;
 }
@@ -180,16 +183,19 @@ Eina_Bool qd_con_request_with_params(const Qd_Game_Info *game_info, const char *
     printf("\tHMAC: \"%s\"\n", hmac);
     ecore_con_url_additional_header_add(url_con, "Authorization", hmac);
 
-    it = eina_hash_iterator_tuple_new(params_hashlist);
-    while (eina_iterator_next(it, (void**)&tuple))
+    if (params_hashlist)
     {
-        const char *key = tuple->key;
-        Eina_Stringshare *value = tuple->data;
-        eina_strbuf_append_printf(request_payload, "&%s=%s", key, value);
+        it = eina_hash_iterator_tuple_new(params_hashlist);
+        while (eina_iterator_next(it, (void**)&tuple))
+        {
+            const char *key = tuple->key;
+            Eina_Stringshare *value = tuple->data;
+            eina_strbuf_append_printf(request_payload, "&%s=%s", key, value);
+        }
+        eina_iterator_free(it); // Always free the iterator after its use
+        tuple = NULL;
+        it = NULL;        
     }
-    eina_iterator_free(it); // Always free the iterator after its use
-    tuple = NULL;
-    it = NULL;
 
     // set some agent
     ecore_con_url_additional_header_add(url_con, "User-Agent", qd_config.user_agent);
