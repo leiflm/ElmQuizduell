@@ -172,6 +172,7 @@ void _on_exit_cb(void *data, Evas_Object *obj, void *event_info)
 
 int qd_view_main_win_add()
 {
+    Evas_Object *ic;
     view.win = elm_win_util_standard_add("Quizduell Window", "Quizduell");
     elm_win_focus_highlight_enabled_set(view.win, EINA_TRUE);
     evas_object_smart_callback_add(view.win, "delete,request", _on_exit_cb, NULL);
@@ -186,6 +187,10 @@ int qd_view_main_win_add()
     evas_object_size_hint_weight_set(view.layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(view.layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_win_resize_object_add(view.win, view.layout);
+
+    ic = elm_icon_add(view.layout);
+    elm_icon_standard_set(ic, "process-working");
+    evas_object_show(ic);
 
     evas_object_resize(view.win, 480, 640);
     evas_object_show(view.win);

@@ -10,7 +10,8 @@ void qd_view_user_data_set(char *name, Evas_Object *icon)
 
 static void qd_view_games_list_reload_clicked_cb(void *data, Evas_Object* obj, void *ev)
 {
-    qd_ctrl_games_list_update();
+    qd_ctrl_users_current_user_games();
+    //qd_ctrl_games_list_update();
     printf("clicked reload\n");
 }
 
