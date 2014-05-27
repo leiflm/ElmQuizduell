@@ -21,6 +21,7 @@ static Eina_Bool _qd_ctrl_users_add_friend_completed_cb(void *data EINA_UNUSED, 
 
 Qd_Player *player = NULL;
 Eina_List *games = NULL; // list of Qd_Game_Info*
+Eina_List *friends = NULL; // list of Qd_Player*
 
 static Eina_Stringshare *_tmp_username = NULL;
 static Eina_Stringshare *_tmp_password = NULL;

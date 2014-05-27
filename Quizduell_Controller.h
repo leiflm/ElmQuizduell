@@ -5,6 +5,7 @@
 
 extern Qd_Player *player;
 extern Eina_List *games; // list of Qd_Game_Info*
+extern Eina_List *friends; // list of Qd_Player*
 
 Eina_Bool qd_ctrl_init(void);
 void qd_ctrl_shutdown(void);
@@ -38,10 +39,5 @@ void qd_ctrl_games_list_update(void);
 
 // Get data/details for specified game and show stat page afterwards
 void qd_ctrl_game_details(Qd_Game_Info *game);
-
-// list of Qd_Game_Info
-Eina_List *Games;
-// list of Qd_Player
-Eina_List *Friends;
 
 #endif
