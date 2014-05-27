@@ -90,7 +90,7 @@ void qd_ctrl_games_game_create(const Qd_User_Id uid)
 
     snprintf(buf, sizeof(buf), "%lu", uid);
 
-    eina_hash_add(hash, "friend_id", eina_stringshare_add(buf));
+    eina_hash_add(hash, "opponent_id", eina_stringshare_add(buf));
     qd_con_request_with_params(NULL, "games/create_game", hash, QD_CON_GAMES_CREATE_GAME, EINA_TRUE);
 
     eina_hash_free(hash);
