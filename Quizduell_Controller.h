@@ -11,6 +11,9 @@ Eina_Bool qd_ctrl_init(void);
 void qd_ctrl_shutdown(void);
 void qd_ctrl_run(void);
 
+// create an account with given username and password
+void qd_ctrl_users_create(Eina_Stringshare *name, Eina_Stringshare *pwd);
+
 void qd_ctrl_user_login(char *name, char* pw);
 
 // find user online by string

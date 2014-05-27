@@ -62,6 +62,25 @@ void qd_ctrl_run(void)
     ecore_main_loop_begin();
 }
 
+void qd_ctrl_users_create(Eina_Stringshare *name, Eina_Stringshare *pwd)
+{
+    char *_password_hash = NULL;
+    printf("creating account for: %s, pwd: %s\n", name, pwd);
+
+    //TODO: Add lock for login try
+    _tmp_username = eina_stringshare_add(name);
+    _tmp_password = eina_stringshare_add(pwd);
+    _password_hash = qd_crypto_create_password_hash(_tmp_password);
+
+    Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
+    eina_hash_add(hash, "name", _tmp_username);
+    eina_hash_add(hash, "pwd", eina_stringshare_add(_password_hash));
+    qd_con_request_with_params(NULL, "users/create", hash, QD_CON_USERS_LOGIN, EINA_TRUE);
+    eina_hash_free(hash);
+    hash = NULL;
+    free(_password_hash);
+}
+
 void qd_ctrl_user_login(char *name, char *pw)
 {
     char *_password_hash = NULL;
