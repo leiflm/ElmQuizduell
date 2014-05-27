@@ -280,7 +280,7 @@ Evas_Object *qd_view_game_stat_page_add(Evas_Object *parent, Qd_Game_Info *game)
     evas_object_size_hint_align_set(retire_btn, EVAS_HINT_FILL, 0.0);
     evas_object_size_hint_weight_set(retire_btn, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     elm_table_pack(layout, retire_btn, 0, NO_ROUNDS_PER_GAME + 2, 1, 1);
-    evas_object_smart_callback_add(retire_btn, "clicked", qd_view_game_stat_retire_clicked_cb, NULL);
+    evas_object_smart_callback_add(retire_btn, "clicked", qd_view_game_stat_retire_clicked_cb, game);
     elm_object_part_text_set(retire_btn, "default", "Give up");
     if (game->state > QD_GAME_STATE_PLAYING)
         elm_object_disabled_set(retire_btn, EINA_TRUE);
