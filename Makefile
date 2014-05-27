@@ -13,8 +13,9 @@ all: /tmp/quizduell
 %.o: %.c $(header)
 	$(CC) $< -c $(CFLAGS) -o $@
 
-/tmp/quizduell: $(objects)
+/tmp/quizduell: $(objects) qkgermany.pem
 	$(CC) -lgcrypt $(LDFLAGS) $(objects) -o /tmp/quizduell
+	cp qkgermany.pem /tmp/
 
 clean:
 	rm -rf /tmp/quizduell

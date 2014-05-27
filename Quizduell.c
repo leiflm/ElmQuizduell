@@ -8,7 +8,7 @@
 #include "Quizduell_Controller.h"
 
 // Account dependent
-#define USER_AGENT "Quizduell A 1.3.2"
+#define DATA_DIR "/tmp/"
 
 Quizduell_Config qd_config;
 
@@ -16,14 +16,16 @@ Quizduell_Config qd_config;
 Quizduell_Country_Specific_Config de_qcsc = {
     .encrypted_hmac_key = "32O6H/XmXyboLYJ3S+bC5hCrQuSldN7fur9MbU5g33A=",
     .encrypted_base_url = "rt6cSQ+b0gQcNs+Ka/XRtR7MMRvUnkQpmkSlYZLe3Bk=",
-    .user_agent = "Quizduell A 1.3.2"
+    .user_agent = "Quizduell A 1.3.2",
+    .pem_file = DATA_DIR"qkgermany.pem"
 };
 
 // Config for Italy
 Quizduell_Country_Specific_Config it_qcsc = {
     .encrypted_hmac_key = "P/bacQtJsv1nKoMPAacI7BCrQuSldN7fur9MbU5g33A=",
     .encrypted_base_url = "9ddNnke+FSDNh/v5AnM0BX4gdk0WOmIFtkwkEjv+NmA=",
-    .user_agent = "Quizduelo A 1.3.2" //possibly missspelled, check APK!
+    .user_agent = "Quizduelo A 1.3.2", //possibly missspelled, check APK!
+    .pem_file = NULL
 };
 
 int main(int argc, char *argv[])

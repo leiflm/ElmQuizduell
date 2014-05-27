@@ -15,6 +15,7 @@ void qd_config_init(const Quizduell_Country_Specific_Config *qcsc)
     }
     qd_config.decrypted_hmac_key = qd_crypto_aes_decrypt(qcsc->encrypted_hmac_key);
     qd_config.user_agent = eina_stringshare_add(qcsc->user_agent);
+    qd_config.pem_file = eina_stringshare_add(qcsc->pem_file);
 }
 
 void qd_config_shutdown(void)
@@ -27,4 +28,5 @@ void qd_config_shutdown(void)
     eina_stringshare_del(qd_config.username), qd_config.username = NULL;
     eina_stringshare_del(qd_config.password), qd_config.password = NULL;
     eina_stringshare_del(qd_config.user_agent), qd_config.user_agent = NULL;
+    eina_stringshare_del(qd_config.pem_file), qd_config.pem_file = NULL;
 }

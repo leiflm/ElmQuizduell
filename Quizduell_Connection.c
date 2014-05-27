@@ -166,8 +166,7 @@ Eina_Bool qd_con_request_with_params(const Qd_Game_Info *game_info, const char *
     //FIXME: Disable debugging
     ecore_con_url_verbose_set(url_con, EINA_TRUE);
 
-    //FIXME: Import QD's actual certificate
-    ecore_con_url_ssl_verify_peer_set(url_con, EINA_FALSE);
+    ecore_con_url_ssl_ca_set(url_con, qd_config.pem_file);
 
     eina_strbuf_append(url_buf, qd_config.decrypted_base_url);
     eina_strbuf_append(url_buf, api_url);
