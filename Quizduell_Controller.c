@@ -323,10 +323,6 @@ static Eina_Bool _qd_ctrl_games_create_game_completed_cb(void *data EINA_UNUSED,
     {
         qd_view_game_stat_page_show(game);
     }
-    else
-    {
-        qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
-    }
 
     return EINA_TRUE;
 }
@@ -340,10 +336,7 @@ static Eina_Bool _qd_ctrl_games_give_up_completed_cb(void *data EINA_UNUSED, int
     printf("Received specific game info\n");
     printf("%s\n", server_response);
 
-    if (!json_parse_game_info_game(game, server_response))
-    {
-        qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
-    }
+    json_parse_game_info_game(game, server_response);
 
     //qd_view_game_stat_page_show(game);
     qd_ctrl_games_list_update();
@@ -363,10 +356,6 @@ static Eina_Bool _qd_ctrl_games_specific_game_info_cb(void *data EINA_UNUSED, in
     if (json_parse_specific_game_info(game, server_response))
     {
         qd_view_game_stat_page_show(game);
-    }
-    else
-    {
-        qd_view_info_message_show("Invalid session", "Please relogin or restart the application!");
     }
 
     return EINA_TRUE;
