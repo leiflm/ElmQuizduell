@@ -359,7 +359,7 @@ static Eina_Bool _qd_ctrl_games_create_game_completed_cb(void *data EINA_UNUSED,
     printf("Received specific game info\n");
     printf("%s\n", server_response);
 
-    if (json_parse_specific_game_info(game, server_response))
+    if ((game = json_parse_specific_game_info(game, server_response)))
     {
         qd_view_game_stat_page_show(game);
     }

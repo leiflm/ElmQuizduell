@@ -216,7 +216,7 @@ Qd_Question *_json_parse_question(json_object *jobj)
     return q;
 }
 
-Eina_Bool json_parse_specific_game_info(Qd_Game_Info *game, const char *json)
+Qd_Game_Info *json_parse_specific_game_info(Qd_Game_Info *game, const char *json)
 {
     json_object *jobj = NULL;
     json_object *game_obj, *tmp = NULL;
@@ -225,7 +225,7 @@ Eina_Bool json_parse_specific_game_info(Qd_Game_Info *game, const char *json)
 
     if (!(jobj = json_tokener_parse(json)))
     {
-        return EINA_FALSE;
+        return NULL;
     }
 
     if ((tmp = json_object_object_get(jobj, "access")))
@@ -234,13 +234,13 @@ Eina_Bool json_parse_specific_game_info(Qd_Game_Info *game, const char *json)
         if (!access)
         {
             // this means that either our cookie is dead or we didn't send one at all
-            return EINA_FALSE;
+            return NULL;
         }
     }
 
     if (!(game_obj = json_object_object_get(jobj, "game")))
     {
-        return EINA_FALSE;
+        return NULL;
     }
     game = _json_parse_game_info_game(game, game_obj);
 
@@ -261,7 +261,7 @@ Eina_Bool json_parse_specific_game_info(Qd_Game_Info *game, const char *json)
         }
     }
 
-    return EINA_TRUE;
+    return game;
 }
 
 Qd_Server_Message *json_parse_server_message(const char *json)
