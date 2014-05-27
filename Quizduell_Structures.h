@@ -50,8 +50,8 @@ typedef struct
 typedef enum
 {
     QD_GAME_STATE_NONE = 0,
-    QD_GAME_STATE_PLAYING,
-    QD_GAME_STATE_FINISHED,
+    QD_GAME_STATE_PLAYING = 1,
+    QD_GAME_STATE_FINISHED = 2,
     QD_GAME_STATE_GIVEN_UP = 5
 } Qd_Game_State;
 
