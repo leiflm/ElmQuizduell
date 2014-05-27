@@ -498,6 +498,13 @@ static Eina_Bool _qd_ctrl_users_add_friend_completed_cb(void *data EINA_UNUSED, 
 static void _qd_ctrl_data_free(void)
 {
     Qd_Game_Info *game = NULL;
+    Qd_Player *_friend = NULL;
+
+    EINA_LIST_FREE(friends, _friend)
+    {
+        qd_player_free(_friend);
+    }
+    friends = NULL;
 
     EINA_LIST_FREE(games, game)
     {

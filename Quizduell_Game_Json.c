@@ -144,8 +144,9 @@ Eina_Bool json_parse_users_current_user_games(const char *json)
     json_object *user = NULL, *tmp = NULL;
     array_list *arr = NULL;
     int i = 0;
-    int no_games = 0;
+    int no_games = 0, no_friends = 0;
     Qd_Game_Info *game = NULL;
+    Qd_Player *_friend = NULL;
     json_object *jobj = NULL;
 
     if (!(jobj = json_tokener_parse(json)))
@@ -162,6 +163,21 @@ Eina_Bool json_parse_users_current_user_games(const char *json)
     if (!(player = _json_parse_player(user)))
     {
         return EINA_FALSE;
+    }
+
+    // parse friends
+    EINA_LIST_FREE(friends, _friend)
+    {
+        qd_player_free(_friend);
+    }
+    friends = NULL;
+
+    tmp = json_object_object_get(user, "friends"); // array of ints
+    for (arr = json_object_get_array(tmp), no_friends = json_object_array_length(tmp); i < no_friends; i++)
+    {
+        json_object *o = json_object_array_get_idx(tmp, i);
+        _friend = _json_parse_player(o);
+        friends = eina_list_append(friends, _friend);
     }
 
     // parse games
