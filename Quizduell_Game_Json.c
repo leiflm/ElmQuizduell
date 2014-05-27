@@ -27,7 +27,6 @@ static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_o
     json_object *tmp = NULL, *o = NULL;
     array_list *arr = NULL;
     int i = 0, j = 0;
-    int no_games = 0;
 
     if (_game_info)
     {
@@ -40,7 +39,7 @@ static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_o
 
     if ((tmp = json_object_object_get(jobj, "your_answers"))) // array of ints
     {
-        for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp);
+        for (i = 0, arr = json_object_get_array(tmp);
             i < (sizeof(game_info->your_answers) / sizeof(game_info->your_answers[0][0])); 
             i++, o = NULL)
         {
@@ -104,14 +103,11 @@ static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_o
 
     if ((tmp = json_object_object_get(jobj, "cat_choices"))) // array of ints
     {
-        for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp), o = NULL; 
-            i < (sizeof(game_info->cat_choices) / sizeof(game_info->cat_choices[0]
-                )); i++, o = NULL)
+        for (i = 0, arr = json_object_get_array(tmp), o = NULL; 
+            i < (sizeof(game_info->cat_choices) / sizeof(game_info->cat_choices[0]));
+            i++, o = NULL)
         {
-            if (i < no_games)
-            {
-                o = json_object_array_get_idx(tmp, i);
-            }
+            o = json_object_array_get_idx(tmp, i);
             game_info->cat_choices[i] = o ? json_object_get_int(o) : QD_INVALID_VALUE;
         }
     }
@@ -125,16 +121,13 @@ static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_o
 
     if ((tmp = json_object_object_get(jobj, "opponent_answers"))) // array of ints
     {
-        for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp), o = NULL;
+        for (i = 0, arr = json_object_get_array(tmp), o = NULL;
             i < (sizeof(game_info->opponent_answers) / sizeof(game_info->opponent_answers[0][0]));
             i++, o = NULL)
         {
             unsigned int rnd = i / 3;
             unsigned int game = i % 3;
-            if (i < no_games)
-            {
-                o = json_object_array_get_idx(tmp, i);
-            }
+            o = json_object_array_get_idx(tmp, i);
             game_info->opponent_answers[rnd][game] = o ? json_object_get_int(o) : QD_INVALID_VALUE;
         }        
     }
@@ -249,6 +242,18 @@ Eina_Bool json_parse_users_current_user_games(const char *json)
     }
 
     return EINA_TRUE;
+}
+
+Eina_Bool json_parse_games_upload_round_answers(Qd_Game_Info *game, const char *json)
+{
+    json_object *jobj, *game_obj;
+
+    if ((jobj = json_tokener_parse(json)) && (game_obj = json_object_object_get(jobj, "game")) && _json_parse_game_info_game(game, game_obj))
+    {
+        return EINA_TRUE;
+    }
+
+    return EINA_FALSE;
 }
 
 Eina_Bool json_parse_login(const char *json)

@@ -450,7 +450,7 @@ static Eina_Bool _qd_ctrl_games_upload_round_answers_completed_cb(void *data EIN
     {
         if (game->game_id == game_id)
         {
-            json_parse_game_info_game(game, server_response);
+            json_parse_games_upload_round_answers(game, server_response);
             printf("Game Info structure was updated in-place too!\n");
             break;
         }
