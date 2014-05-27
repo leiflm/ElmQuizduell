@@ -219,7 +219,7 @@ Eina_Bool json_parse_users_current_user_games(const char *json)
     friends = NULL;
 
     tmp = json_object_object_get(user, "friends"); // array of ints
-    for (arr = json_object_get_array(tmp), no_friends = json_object_array_length(tmp); i < no_friends; i++)
+    for (i = 0, arr = json_object_get_array(tmp), no_friends = json_object_array_length(tmp); i < no_friends; i++)
     {
         json_object *o = json_object_array_get_idx(tmp, i);
         _friend = _json_parse_player(o);
@@ -234,7 +234,7 @@ Eina_Bool json_parse_users_current_user_games(const char *json)
     games = NULL;
 
     tmp = json_object_object_get(user, "games"); // array of ints
-    for (arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp); i < no_games; i++)
+    for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp); i < no_games; i++)
     {
         json_object *o = json_object_array_get_idx(tmp, i);
         game = _json_parse_game_info_game(NULL, o);
