@@ -26,7 +26,7 @@ static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_o
     Qd_Game_Info *game_info = NULL;
     json_object *tmp = NULL, *o = NULL;
     array_list *arr = NULL;
-    int i = 0;
+    int i = 0, j = 0;
     int no_games = 0;
 
     if (_game_info)
@@ -38,22 +38,35 @@ static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_o
         game_info = calloc(1, sizeof(Qd_Game_Info));
     }
 
-    tmp = json_object_object_get(jobj, "your_answers"); // array of ints
-    for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp);
-        i < (sizeof(game_info->your_answers) / sizeof(game_info->your_answers[0][0])); 
-        i++, o = NULL)
+    if ((tmp = json_object_object_get(jobj, "your_answers"))) // array of ints
     {
-        unsigned int rnd = i / 3;
-        unsigned int game = i % 3;
-        o = json_object_array_get_idx(tmp, i);
-        game_info->your_answers[rnd][game] = o ? json_object_get_int(o) : QD_INVALID_VALUE;
+        for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp);
+            i < (sizeof(game_info->your_answers) / sizeof(game_info->your_answers[0][0])); 
+            i++, o = NULL)
+        {
+            unsigned int rnd = i / 3;
+            unsigned int game = i % 3;
+            o = json_object_array_get_idx(tmp, i);
+            game_info->your_answers[rnd][game] = o ? json_object_get_int(o) : QD_INVALID_VALUE;
+        }
+    }
+    else
+    {
+        for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
+        {
+            for (j = 0; j < NO_QUESTIONS_PER_ROUND; j++)
+            {
+                game_info->your_answers[i][j] = QD_INVALID_VALUE;            
+            }
+        }
     }
 
-    tmp = json_object_object_get(jobj, "state");
-    game_info->state = json_object_get_int(tmp);
+    if ((tmp = json_object_object_get(jobj, "state")))
+    {
+        game_info->state = json_object_get_int(tmp);
+    }
 
-    tmp = json_object_object_get(jobj, "you_gave_up");
-    if (tmp)
+    if ((tmp = json_object_object_get(jobj, "you_gave_up")))
     {
         game_info->you_gave_up = json_object_get_boolean(tmp);
     }
@@ -62,20 +75,24 @@ static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_o
         game_info->you_gave_up = EINA_FALSE;
     }
 
-    tmp = json_object_object_get(jobj, "elapsed_min");
-    game_info->elapsed_min = json_object_get_int(tmp);
+    if ((tmp = json_object_object_get(jobj, "elapsed_min")))
+    {
+        game_info->elapsed_min = json_object_get_int(tmp);
+    }
 
-    tmp = json_object_object_get(jobj, "rating_bonus");
-    game_info->rating_bonus = json_object_get_int(tmp);
+    if ((tmp = json_object_object_get(jobj, "rating_bonus")))
+    {
+        game_info->rating_bonus = json_object_get_int(tmp);
+    }
 
-    tmp = json_object_object_get(jobj, "your_turn");
-    game_info->your_turn = json_object_get_boolean(tmp);
+    if ((tmp = json_object_object_get(jobj, "your_turn")))
+    {
+        game_info->your_turn = json_object_get_boolean(tmp);
+    }
 
-    tmp = json_object_object_get(jobj, "game_id");
-    game_info->game_id = json_object_get_int64(tmp);
+    game_info->game_id = json_object_get_int64(json_object_object_get(jobj, "game_id"));
 
-    tmp = json_object_object_get(jobj, "give_up_player_id");
-    if (tmp)
+    if ((tmp = json_object_object_get(jobj, "give_up_player_id")))
     {
         game_info->give_up_player_id = json_object_get_int64(tmp);
     }
@@ -85,38 +102,60 @@ static Qd_Game_Info *_json_parse_game_info_game(Qd_Game_Info *_game_info, json_o
     }
 
 
-    tmp = json_object_object_get(jobj, "cat_choices"); // array of ints
-    for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp), o = NULL; 
-        i < (sizeof(game_info->cat_choices) / sizeof(game_info->cat_choices[0]
-            )); 
-        i++, o = NULL)
+    if ((tmp = json_object_object_get(jobj, "cat_choices"))) // array of ints
     {
-        if (i < no_games)
+        for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp), o = NULL; 
+            i < (sizeof(game_info->cat_choices) / sizeof(game_info->cat_choices[0]
+                )); i++, o = NULL)
         {
-            o = json_object_array_get_idx(tmp, i);
+            if (i < no_games)
+            {
+                o = json_object_array_get_idx(tmp, i);
+            }
+            game_info->cat_choices[i] = o ? json_object_get_int(o) : QD_INVALID_VALUE;
         }
-        game_info->cat_choices[i] = o ? json_object_get_int(o) : QD_INVALID_VALUE;
+    }
+    else
+    {
+        for (i = 0; i < (sizeof(game_info->cat_choices) / sizeof(game_info->cat_choices[0])); i++)
+        {
+            game_info->cat_choices[i] = QD_INVALID_VALUE;            
+        }
     }
 
-    tmp = json_object_object_get(jobj, "opponent_answers"); // array of ints
-    for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp), o = NULL;
-        i < (sizeof(game_info->opponent_answers) / sizeof(game_info->opponent_answers[0][0])); 
-        i++, o = NULL)
+    if ((tmp = json_object_object_get(jobj, "opponent_answers"))) // array of ints
     {
-        unsigned int rnd = i / 3;
-        unsigned int game = i % 3;
-        if (i < no_games)
+        for (i = 0, arr = json_object_get_array(tmp), no_games = json_object_array_length(tmp), o = NULL;
+            i < (sizeof(game_info->opponent_answers) / sizeof(game_info->opponent_answers[0][0]));
+            i++, o = NULL)
         {
-            o = json_object_array_get_idx(tmp, i);
+            unsigned int rnd = i / 3;
+            unsigned int game = i % 3;
+            if (i < no_games)
+            {
+                o = json_object_array_get_idx(tmp, i);
+            }
+            game_info->opponent_answers[rnd][game] = o ? json_object_get_int(o) : QD_INVALID_VALUE;
+        }        
+    }
+    else
+    {
+        for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
+        {
+            for (j = 0; j < NO_QUESTIONS_PER_ROUND; j++)
+            {
+                game_info->opponent_answers[i][j] = QD_INVALID_VALUE;            
+            }
         }
-        game_info->opponent_answers[rnd][game] = o ? json_object_get_int(o) : QD_INVALID_VALUE;
     }
 
     //TODO: actually copy messages
     game_info->messages = NULL;
 
-    tmp = json_object_object_get(jobj, "opponent");
-    game_info->opponent = _json_parse_player(tmp);
+    if ((tmp = json_object_object_get(jobj, "opponent")))
+    {
+        game_info->opponent = _json_parse_player(tmp);
+    }
 
     return game_info;
 }
