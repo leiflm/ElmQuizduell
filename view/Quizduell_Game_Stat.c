@@ -205,7 +205,9 @@ void qd_view_game_stat_play_clicked_cb(void *data, Evas_Object *obj, void *ev)
 
 void qd_view_game_stat_retire_clicked_cb(void *data, Evas_Object *obj, void *ev)
 {
-    printf("cant give up yet\n");
+    Qd_Game_Info *game = (Qd_Game_Info *) data;
+    qd_ctrl_games_give_up(game);
+    printf("give up\n");
 }
 
 void qd_view_game_stat_calc_round(Qd_Game_Info *game)
