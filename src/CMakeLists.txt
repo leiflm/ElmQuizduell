@@ -31,23 +31,23 @@ include_directories(
 
 
 LIST(APPEND ELM_QUIZDUELL_CC_SOURCES
-    Quizduell.c
-    Quizduell_Config.c
-    Quizduell_Connection.c
-    Quizduell_Controller.c
-    Quizduell_Crypto.c
-    Quizduell_Game_Json.c
-    Quizduell_Structures.c
-    Quizduell_View.c
+    quizduell.c
+    quizduell_config.c
+    quizduell_connection.c
+    quizduell_controller.c
+    quizduell_crypto.c
+    quizduell_game_json.c
+    quizduell_structures.c
+    quizduell_view.c
     base64.c
-    view/Quizduell_Category.c
-    view/Quizduell_Game_Stat.c
-    view/Quizduell_Games_List.c
-    view/Quizduell_Login.c
-    view/Quizduell_New_Game.c
-    view/Quizduell_Preferences.c
-    view/Quizduell_Question.c
-    view/Quizduell_Search_Player.c
+    view/quizduell_category.c
+    view/quizduell_game_stat.c
+    view/quizduell_games_list.c
+    view/quizduell_login.c
+    view/quizduell_new_game.c
+    view/quizduell_preferences.c
+    view/quizduell_question.c
+    view/quizduell_search_player.c
     )
 
 add_executable(elm_quizduell ${ELM_QUIZDUELL_CC_SOURCES})
