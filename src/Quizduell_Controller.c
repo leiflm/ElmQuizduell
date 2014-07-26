@@ -1,4 +1,4 @@
-#include <json/json.h>
+#include <json-c/json.h>
 #include <Eina.h>
 #include <Ecore.h>
 #include "Quizduell_Structures.h"
@@ -185,10 +185,11 @@ void qd_ctrl_answers_send(Qd_Game_Info *game)
     unsigned int category = QD_INVALID_VALUE;
     Eina_Hash *hash = eina_hash_string_superfast_new((Eina_Free_Cb)eina_stringshare_del);
     Eina_Strbuf *strbuf = eina_strbuf_new();
+    int i = 0;
 
     printf("Sending answers for game %lu\n", game->game_id);
 
-    for (int i = 0; i < NO_ROUNDS_PER_GAME; i++)
+    for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
     {
         if (game->cat_choices[i] == QD_INVALID_VALUE)
         {
@@ -203,9 +204,10 @@ void qd_ctrl_answers_send(Qd_Game_Info *game)
     eina_hash_add(hash, "game_id", eina_stringshare_add(buf));
 
     eina_strbuf_append(strbuf, "[");
-    for (int i = 0; i < NO_ROUNDS_PER_GAME; i++)
+    for (i = 0; i < NO_ROUNDS_PER_GAME; i++)
     {
-        for (int j = 0; j < NO_QUESTIONS_PER_ROUND; j++)
+        int j = 0;
+        for (j = 0; j < NO_QUESTIONS_PER_ROUND; j++)
         {
             if (game->cat_choices[i] == QD_INVALID_VALUE)
             {
@@ -423,9 +425,10 @@ static void _qd_ctrl_data_free(void)
 
     EINA_LIST_FREE(games, game)
     {
+        int i = 0;
         printf("opponent: %s\n", game->opponent->name);
         printf("game_id: %li\n", game->game_id);
-        for (int i = 0; i < 18; ++i)
+        for (i = 0; i < 18; ++i)
         {
             int rnd = i / 3;
             int j = i % 3;

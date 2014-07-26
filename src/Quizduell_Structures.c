@@ -37,6 +37,7 @@ void qd_question_free(Qd_Question *q)
 void qd_game_info_free(Qd_Game_Info *game)
 {
     Qd_Message *m;
+    int i, j, k;
 
     if (!game)
     {
@@ -49,11 +50,11 @@ void qd_game_info_free(Qd_Game_Info *game)
     }
     qd_player_free(game->opponent);
 
-    for (int i = 0; i < NO_ROUNDS_PER_GAME; ++i)
+    for (i = 0; i < NO_ROUNDS_PER_GAME; ++i)
     {
-        for (int j = 0; j < NO_CAT_CHOICES; ++j)
+        for (j = 0; j < NO_CAT_CHOICES; ++j)
         {
-            for (int k = 0; k < NO_QUESTIONS_PER_ROUND; ++k)
+            for (k = 0; k < NO_QUESTIONS_PER_ROUND; ++k)
             {
                 qd_question_free(game->questions[i][j][k]);
             }

@@ -3,6 +3,8 @@
 
 #include <Eina.h>
 
+#define ELM_QUIZDUELL_CERTS_DIR "/tmp/elm_qd/share/ElmQuizduell/certs/"
+
 typedef struct _Quizduell_Country_Specific_Config {
     const char *encrypted_hmac_key; // apk_decompilation/res/values/strings.xml:android_handy_id
     const char *encrypted_base_url; // apk_decompilation/res/values/strings.xml:android_twiggly_id

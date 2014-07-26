@@ -17,7 +17,7 @@ Quizduell_Country_Specific_Config de_qcsc = {
     .encrypted_hmac_key = "32O6H/XmXyboLYJ3S+bC5hCrQuSldN7fur9MbU5g33A=",
     .encrypted_base_url = "rt6cSQ+b0gQcNs+Ka/XRtR7MMRvUnkQpmkSlYZLe3Bk=",
     .user_agent = "Quizduell A 1.3.2",
-    .pem_file = DATA_DIR"qkgermany.pem"
+    .pem_file = ELM_QUIZDUELL_CERTS_DIR"qkgermany.pem"
 };
 
 // Config for Italy

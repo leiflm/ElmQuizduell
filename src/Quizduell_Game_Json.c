@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <json/json.h>
+#include <json-c/json.h>
 #include "Quizduell_Game_Json.h"
 #include "Quizduell_Controller.h"
 #include "Quizduell_Structures.h"

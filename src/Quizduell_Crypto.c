@@ -12,8 +12,9 @@
 // 16 bytes will be written into ouput_key
 static void _prepare_key(const char *input_key, char *output_key)
 {
+  int i = 0;
     size_t input_key_length = strlen(input_key);
-    for (int i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++) {
         output_key[i] = ((i + input_key[abs((input_key_length - i) % input_key_length)]) % 256);
     }
 }
@@ -134,12 +135,13 @@ char *qd_crypto_create_password_hash(const char *password)
   char *buffer = NULL;
   size_t input_len = 0;
   Eina_Strbuf *expanded_hash = eina_strbuf_new();
+  int i = 0;
   
   input_len = asprintf(&buffer, "%s%s", PWD_HASH_PADDING, password);
 
   /* Create a hash device and check the HASH */
   gcry_md_hash_buffer(MESSAGE_DIGEST_ALGO, (void *)(hash_buffer), (const void*)buffer, input_len);
-  for (int i = 0; i < hash_len; i++) {
+  for (i = 0; i < hash_len; i++) {
     eina_strbuf_append_printf(expanded_hash, "%02x", (int)(0xff & hash_buffer[i]));
   }
 

@@ -1,0 +1,7 @@
+ElmQuizduell is an free implementation of the popular trivia game "Quizkampen" ("Quizduell" in German).
+
+This implementation is written using:
+- EFL
+- GCrypt
+- JSON-C
+- LibBSD
