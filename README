@@ -5,3 +5,6 @@ This implementation is written using:
 - GCrypt
 - JSON-C
 - LibBSD
+
+Visual assets used:
+- Flags (https://github.com/rafaelconde/flatflags.git)

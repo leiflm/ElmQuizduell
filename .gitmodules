@@ -1,0 +1,3 @@
+[submodule "flatflags"]
+	path = data/images/flatflags
+	url = https://github.com/rafaelconde/flatflags.git
