@@ -6,6 +6,7 @@
 #define ELM_QUIZDUELL_CERTS_DIR "@CERTS_DIR@"
 
 typedef struct _Quizduell_Country_Specific_Config {
+    const char *country;
     const char *encrypted_hmac_key; // apk_decompilation/res/values/strings.xml:android_handy_id
     const char *encrypted_base_url; // apk_decompilation/res/values/strings.xml:android_twiggly_id
     const char *user_agent;
